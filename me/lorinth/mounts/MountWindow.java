@@ -27,8 +27,8 @@ class MountWindow {
 	private void createWindow(){
 		String name = main.convertToMColors(main.windowName);
 
-		int rows = playerMounts.size() / 9;
-		inv = Bukkit.getServer().createInventory(null, 9 * rows, name);
+		double rows = Math.ceil((double) playerMounts.size() / 9);
+		inv = Bukkit.getServer().createInventory(null, (int)(9 * rows), name);
 		int slot = 0;
 		for (String mount : playerMounts) {
 			inv.setItem(slot, ALL_MOUNTS.get(mount).getDisplayItem());
