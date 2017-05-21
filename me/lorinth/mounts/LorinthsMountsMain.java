@@ -144,7 +144,6 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 			if (mountYml.contains("Mounts." + name + ".Color")) {
 				color = mountYml.getString("Mounts." + name + ".Color");
 			}
-			System.out.println("4");
 			String style = "NONE";
 			if (mountYml.contains("Mounts." + name + ".Style")) {
 				style = mountYml.getString("Mounts." + name + ".Style");
