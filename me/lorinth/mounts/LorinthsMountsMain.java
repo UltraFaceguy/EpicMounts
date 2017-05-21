@@ -10,12 +10,13 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,7 +25,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -33,11 +33,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class LorinthsMountsMain extends JavaPlugin implements Listener{
 
-	ConsoleCommandSender console;
-	
-	HashMap<Player, MountWindow> openMountWindows = new HashMap<Player, MountWindow>();
-	HashMap<String, Mount> mounts = new HashMap<String, Mount>();
-	public HashMap<Player, Horse> activeHorses = new HashMap<Player, Horse>();
+	private ConsoleCommandSender console;
+
+	public static HashMap<String, Mount> ALL_MOUNTS = new HashMap<>();
+	HashMap<Player, AbstractHorse> activeHorses = new HashMap<>();
 	
 	
 	public ArrayList<Player> mountCooldowns = new ArrayList<Player>();
@@ -46,12 +45,11 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 	File config;
 	YamlConfiguration configYml;
 	
-	File mount;
-	YamlConfiguration mountYml;
+	private File mount;
+	private YamlConfiguration mountYml;
 
-	public String windowName;
-	
-	public long cooldownDelay;
+	String windowName;
+	long cooldownDelay;
 	
 	
 	
@@ -87,11 +85,11 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 								+"Config:\n"
 								+"    Notify: true #shows mount/dismount messages to players\n"
 								+"    Cooldown: 20 #Cooldown, in seconds, between summons, set to 0 if you don't want a cooldown\n"
-								+"    WindowName: \"<name>'s Mounts\""
+								+"    WindowName: RPG_MOUNTS\n"
 								+"Mounts:\n"
 								+"    'IronSteed': #Use permission LMounts.IronSteed\n"
 								+"        DisplayName: '&5Iron Steed' #Display name on item and above mounts head, can take colors\n"
-								+"        Item: 417 #Display item in menu\n"
+								+"        Item: SADDLE\n"
 								+"        Lore: #This can take color codes\n"
 								+"        - '&6This mount is clad in iron armor'\n"
 								+"        - '&7Speed : 150%'\n"
@@ -99,10 +97,7 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 								+"        Speed: 150 #% of player speed\n"
 								+"        Jump: 0.7 #Scales between 0 and 2, 0.7 is average\n"
 								+"        Health: 1 #1hp = 1 hit dead\n"
-								+"        Armor: 417 #0=none, 417=iron, 418=gold, 419=diamond\n"
-								+"        Variant: 0 #Between 0-4\n"
-								+"        Color: 0 #Between 0-6\n"
-								+"        Style: 0 #Between 0-4\n");
+								+"        Variant: HORSE\n");
 						writer.close();
 					} catch (IOException e2) {
 						// TODO Auto-generated catch block
@@ -119,33 +114,56 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 		boolean mountYmlChanged = false;
 		
 		Set<String> configSettings = mountYml.getConfigurationSection("Config").getKeys(false);
-		
 		notify = mountYml.getBoolean("Config.Notify");
 		cooldownDelay = mountYml.getLong("Config.Cooldown");
-		if(configSettings.contains("WindowName")){
+
+		if (configSettings.contains("WindowName")) {
 			windowName = mountYml.getString("Config.WindowName");
-		}
-		else{
-			mountYml.set("Config.WindowName", "<name>'s Mounts");
-			windowName = "<name>'s Mounts";
+		} else {
+			mountYml.set("Config.WindowName", "RPG_MOUNTS");
+			windowName = "RPG_MOUNTS";
 			mountYmlChanged = true;
 		}
-		
-		for(String name : mountYml.getConfigurationSection("Mounts").getKeys(false)){
-			int item = mountYml.getInt("Mounts." + name + ".Item");
+
+		for (String name : mountYml.getConfigurationSection("Mounts").getKeys(false)){
+			Material item = Material.getMaterial(mountYml.getString("Mounts." + name + ".Item"));
 			String displayname = convertToMColors(mountYml.getString("Mounts." + name + ".DisplayName"));
 			double speed = mountYml.getDouble("Mounts." + name + ".Speed");
 			double jump = mountYml.getDouble("Mounts." + name + ".Jump");
 			double hp = mountYml.getDouble("Mounts." + name + ".Health");
 			List<String> lore = convertToMColors(mountYml.getStringList("Mounts." + name + ".Lore"));
-			int armor = mountYml.getInt("Mounts." + name + ".Armor");
-			int variant = mountYml.getInt("Mounts." + name + ".Variant");
-			int color = mountYml.getInt("Mounts." + name + ".Color");
-			int style = mountYml.getInt("Mounts." + name + ".Style");
-			
-			Mount m = new Mount(displayname, item, lore, speed, jump, hp, armor, variant, color, style);
-			
-			mounts.put(name, m);
+			String armor = null;
+			if (mountYml.contains("Mounts." + name + ".Armor")) {
+				armor = mountYml.getString("Mounts." + name + ".Armor");
+			}
+			String variant = "HORSE";
+			if (mountYml.contains("Mounts." + name + ".Variant")) {
+				variant = mountYml.getString("Mounts." + name + ".Variant");
+			}
+			String color = "BROWN";
+			if (mountYml.contains("Mounts." + name + ".Color")) {
+				color = mountYml.getString("Mounts." + name + ".Color");
+			}
+			System.out.println("4");
+			String style = "NONE";
+			if (mountYml.contains("Mounts." + name + ".Style")) {
+				style = mountYml.getString("Mounts." + name + ".Style");
+			}
+
+			Mount m = new Mount(
+					displayname,
+					item,
+					lore,
+					speed,
+					jump,
+					hp,
+					armor,
+					variant,
+					color,
+					style
+			);
+
+			ALL_MOUNTS.put(name, m);
 		}
 		
 		if(mountYmlChanged){
@@ -162,7 +180,7 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 	public void onDisable(){
 		printErrorLine("Has been disabled");
 		
-		for(Horse p : activeHorses.values()){
+		for(AbstractHorse p : activeHorses.values()){
 			p.remove();
 		}
 		
@@ -182,22 +200,22 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void OnHorseHit(EntityDamageEvent e){
-		if(e.getEntity() instanceof Horse){
-			if(activeHorses.containsValue((Horse)e.getEntity())){
-				activeHorses.remove(((Horse)e.getEntity()).getPassenger());
-				((Horse)e.getEntity()).getInventory().clear();
-				e.getEntity().remove();
+		if(e.getEntity() instanceof AbstractHorse){
+			if(activeHorses.containsValue(e.getEntity())){
+				activeHorses.remove(e.getEntity().getPassenger());
+				((AbstractHorse)e.getEntity()).getInventory().clear();
 				e.setDamage(0);
 				e.setCancelled(true);
+				e.getEntity().remove();
 			}
 		}
 	}
 	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void OnHorseDeath(EntityDeathEvent e){
-		if(e.getEntity() instanceof Horse){
-			if(activeHorses.containsValue((Horse)e.getEntity())){
-				activeHorses.remove(((Horse)e.getEntity()).getPassenger());
+		if(e.getEntity() instanceof AbstractHorse){
+			if(activeHorses.containsValue(e.getEntity())){
+				activeHorses.remove(e.getEntity().getPassenger());
 				e.setDroppedExp(0);
 				e.getDrops().clear();
 			}
@@ -205,11 +223,11 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){		
-		if(sender instanceof Player){
+		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if(commandLabel.equalsIgnoreCase("mounts")){
+			if (commandLabel.equalsIgnoreCase("mounts")) {
 				MountWindow window = new MountWindow(this, getAvailableMounts(player), player);
-				this.openMountWindows.put(player, window);
+				window.showPlayer();
 			}
 		}
 		return false;
@@ -217,18 +235,29 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 	
 	@EventHandler
 	public void OnWindowClick(InventoryClickEvent event){
-		MountWindow win = openMountWindows.get(event.getWhoClicked());
-		if(win != null){
-			win.handleClick(event);
-		}
-	}
-	
-	@EventHandler
-	public void OnWindowClose(InventoryCloseEvent event){
-		Player p = (Player) event.getPlayer();
-		MountWindow win = openMountWindows.get(p);
-		if(win != null){
-			openMountWindows.remove(p);
+		if (event.getInventory().getName().equals(convertToMColors(windowName))) {
+			try {
+				Player p = (Player)event.getWhoClicked();
+				Mount m = ALL_MOUNTS.get(getAvailableMounts(p).get(event.getSlot()));
+				if(m != null && !mountCooldowns.contains(p)){
+					if (notify) {
+						p.sendMessage(ChatColor.GRAY + "[Mount] " + ChatColor.YELLOW + "You have mounted " + m.getName());
+					}
+					activeHorses.put(p, m.spawn(p));
+					p.closeInventory();
+					mountCooldowns.add(p);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable(){
+						@Override
+						public void run() {
+							mountCooldowns.remove(p);
+						}
+					}, cooldownDelay);
+				}
+			}
+			catch(IndexOutOfBoundsException error){
+				//pass
+			}
+			event.setCancelled(true);
 		}
 	}
 	
@@ -241,17 +270,15 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 	
 	@EventHandler
 	public void OnHorseDismount(VehicleExitEvent event){
-		if(event.getVehicle() instanceof Horse){
+		if(event.getVehicle() instanceof AbstractHorse){
 			Entity ent = event.getExited();
-			if(ent instanceof Player){
-				Horse h = activeHorses.get((Player) ent);
-				if(h != null){
-					activeHorses.remove((Player) ent);
-					
+			if (ent instanceof Player) {
+				AbstractHorse h = activeHorses.get(ent);
+				if (h != null) {
+					activeHorses.remove(ent);
 					if(notify){
-						((Player)ent).sendMessage(ChatColor.GRAY + "[Mount] : You have dismounted!");
+						ent.sendMessage(ChatColor.GRAY + "[Mount] " + ChatColor.YELLOW + "[Mount] You have dismounted!");
 					}
-					
 					h.remove();
 				}
 			}
@@ -263,12 +290,12 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 		if(event.getEntity() instanceof Player){
 			Player player = (Player) event.getEntity();
 			if(activeHorses.containsKey(player)){
-				Horse h = activeHorses.get(player);
+				AbstractHorse h = activeHorses.get(player);
 				
 				activeHorses.remove(player);
 				
 				if(notify){
-					player.sendMessage(ChatColor.GRAY + "[Mount] : You have dismounted from combat!");
+					player.sendMessage(ChatColor.GRAY + "[Mount] " + ChatColor.YELLOW + "You have dismounted from combat!");
 				}
 				
 				h.remove();
@@ -281,7 +308,7 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 		if(event.getDamager() instanceof Player){
 			Player player = (Player) event.getDamager();
 			if(activeHorses.containsKey(player)){
-				Horse h = activeHorses.get(player);
+				AbstractHorse h = activeHorses.get(player);
 				
 				activeHorses.remove(player);
 				
@@ -298,7 +325,7 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 	public void OnPlayerQuit(PlayerQuitEvent event){
 		Player player = event.getPlayer();
 		if(activeHorses.containsKey(player)){
-			Horse h = activeHorses.get(player);
+			AbstractHorse h = activeHorses.get(player);
 			activeHorses.remove(player);
 			h.remove();
 		}
@@ -308,29 +335,28 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener{
 	public void OnPlayerKicked(PlayerKickEvent event){
 		Player player = event.getPlayer();
 		if(activeHorses.containsKey(player)){
-			Horse h = activeHorses.get(player);
+			AbstractHorse h = activeHorses.get(player);
 			activeHorses.remove(player);
 			h.remove();
 		}
 	}
 	
-	List<Mount> getAvailableMounts(Player player){
-		List<Mount> available = new ArrayList<Mount>();
-		
-		for(String name : mounts.keySet()){
+	private List<String> getAvailableMounts(Player player){
+		List<String> available = new ArrayList<>();
+		for(String name : ALL_MOUNTS.keySet()){
 			if(player.hasPermission("LMounts." + name)){
-				available.add(mounts.get(name));
+				available.add(name);
 			}
 		}
 		
 		return available;
 	}
 	
-	public String convertToMColors(String line){
+	String convertToMColors(String line){
 		return line.replaceAll("&", "§");
 	}
 	
-	public List<String> convertToMColors(List<String> lines){
+	private List<String> convertToMColors(List<String> lines){
 		List<String> newLines = new ArrayList<String>();
 		for(String line : lines){
 			newLines.add(convertToMColors(line));

@@ -2,108 +2,159 @@ package me.lorinth.mounts;
 
 import java.util.List;
 
-import net.minecraft.server.v1_10_R1.GenericAttributes;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftLivingEntity;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.Donkey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Horse.Color;
 import org.bukkit.entity.Horse.Style;
-import org.bukkit.entity.Horse.Variant;
+import org.bukkit.entity.Mule;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.SkeletonHorse;
+import org.bukkit.entity.ZombieHorse;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class Mount {
+class Mount {
 
+	private ItemStack displayItem;
+
+	private String variant;
+
+	private String name;
 	private double speed;
 	private double jump;
 	private double health;
+
+	private Material armor;
+	private Style style;
+	private Color color;
 	
-	private String name;
-	
-	private Integer itemId;
-	private List<String> lore;
-	private Integer armorId;
-	
-	private int styleId;
-	private int colorId;
-	private int variantId;
-	
-	private ItemStack displayItem;
-	
-	public Mount(String name, int item, List<String> lore, double spd, double jump, double hp, int armor, int variantId, int colorId, int styleId){
+	Mount(String name, Material icon, List<String> lore, double spd, double jump, double hp, String armor, String variant, String color, String style){
+		this.variant = variant;
 		this.name = name;
-		itemId = item;
-		this.lore = lore;
-		speed = spd;
+		this.speed = spd;
 		this.jump = jump;
-		health = hp;
-		armorId = armor;
-		this.variantId = variantId;
-		this.colorId = colorId;
-		this.styleId = styleId;
+		this.health = hp;
+		this.armor = Material.getMaterial(armor);
+		this.color = stringToColor(color);
+		this.style = styleToColor(style);
 		
-		ItemStack display = new ItemStack(item);
+		ItemStack display = new ItemStack(icon);
+
 		ItemMeta meta = display.getItemMeta();
-		meta.setLore(lore);
 		meta.setDisplayName(name);
+		meta.setLore(lore);
 		display.setItemMeta(meta);
+
 		displayItem = display;
 	}
 	
-	public String getName(){
+	String getName(){
 		return name;
 	}
 	
-	public Horse spawn(Player player){
-		Horse h = (Horse) player.getWorld().spawnEntity(player.getLocation(), EntityType.HORSE);
-		
-		h.setTamed(true);
-		h.setAdult();
-		try{
-			h.setVariant(Variant.values()[variantId]);
+	AbstractHorse spawn(Player player){
+		AbstractHorse genericHorse = null;
+
+		switch (variant.toUpperCase()) {
+			case "HORSE":
+				Horse horse = (Horse) player.getWorld().spawnEntity(player.getLocation(), EntityType.HORSE);
+				horse.setColor(color);
+				horse.setStyle(style);
+				horse.getInventory().setSaddle(new ItemStack(Material.SADDLE));
+				if (armor != null) {
+					horse.getInventory().setArmor(new ItemStack(armor));
+				}
+				genericHorse = horse;
+				break;
+			case "DONKEY":
+				Donkey donkey = (Donkey) player.getWorld().spawnEntity(player.getLocation(), EntityType.DONKEY);
+				for (int i = 0; i < donkey.getInventory().getSize(); i++) {
+					donkey.getInventory().setItem(i, new ItemStack(Material.SADDLE));
+				}
+				genericHorse = donkey;
+				break;
+			case "MULE":
+				Mule mule = (Mule) player.getWorld().spawnEntity(player.getLocation(), EntityType.MULE);
+				for (int i = 0; i < mule.getInventory().getSize(); i++) {
+					mule.getInventory().setItem(i, new ItemStack(Material.SADDLE));
+				}
+				genericHorse = mule;
+				break;
+			case "ZOMBIE_HORSE":
+				ZombieHorse zombieHorse = (ZombieHorse) player.getWorld().spawnEntity(player.getLocation(), EntityType.ZOMBIE_HORSE);
+				for (int i = 0; i < zombieHorse.getInventory().getSize(); i++) {
+					zombieHorse.getInventory().setItem(i, new ItemStack(Material.SADDLE));
+				}
+				genericHorse = zombieHorse;
+				break;
+			case "SKELETON_HORSE":
+				SkeletonHorse skeletonHorse = (SkeletonHorse) player.getWorld().spawnEntity(player.getLocation(), EntityType.SKELETON_HORSE);
+				for (int i = 0; i < skeletonHorse.getInventory().getSize(); i++) {
+					skeletonHorse.getInventory().setItem(i, new ItemStack(Material.SADDLE));
+				}
+				genericHorse = skeletonHorse;
+				break;
+			default:
+				System.out.println("YA FUCKED UP, THIS VARIANT DOESN'T EXIST!");
 		}
-		catch(IndexOutOfBoundsException e){
-			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[ERROR][Mounts] : Variant value, " + variantId + ", on mount, " + name + " is invalid use between 0-" + (Variant.values().length-1));
-			h.setVariant(Variant.values()[0]);
+
+		if (genericHorse == null) {
+			return null;
 		}
-		try{
-			h.setStyle(Style.values()[styleId]);
-		}
-		catch(IndexOutOfBoundsException e){
-			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[ERROR][Mounts] : Style value, " + styleId + ", on mount, " + name + " is invalid use between 0-" + (Style.values().length-1));
-			h.setStyle(Style.values()[0]);
-		}
-		
-		try{
-			h.setColor(Color.values()[colorId]);
-		}
-		catch(IndexOutOfBoundsException e){
-			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[ERROR][Mounts] : Color value, " + colorId + ", on mount, " + name + " is invalid use between 0-" + (Color.values().length-1));
-			h.setColor(Color.values()[0]);
-		}
-		h.setMaxHealth(health);
-		h.setHealth(health);
-		
-		h.setCustomName(name);
-		
-		h.getInventory().setSaddle(new ItemStack(Material.SADDLE));
-		if(armorId != 0){
-			h.getInventory().setArmor(new ItemStack(armorId));
-		}
-		h.setJumpStrength(jump);
-		((CraftLivingEntity) h).getHandle().getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.2 * (speed / 100.0));
-		
-		h.setPassenger(player);
-		return h;
+
+		genericHorse.setCustomName(name);
+		genericHorse.setTamed(true);
+		genericHorse.setAdult();
+
+		genericHorse.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
+		genericHorse.setHealth(health);
+		genericHorse.getAttribute(Attribute.HORSE_JUMP_STRENGTH).setBaseValue(jump);
+		genericHorse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.2 * (speed / 100));
+
+		genericHorse.setPassenger(player);
+		return genericHorse;
 	}
 	
-	public ItemStack getDisplayItem(){
+	ItemStack getDisplayItem(){
 		return displayItem;
+	}
+
+	private Color stringToColor(String color) {
+		switch (color.toUpperCase()) {
+			case "BROWN":
+				return Color.BROWN;
+			case "BLACK":
+				return Color.BLACK;
+			case "WHITE":
+				return Color.WHITE;
+			case "GRAY":
+				return Color.GRAY;
+			case "CREAMY":
+				return Color.CREAMY;
+			case "DARK_BROWN":
+				return Color.DARK_BROWN;
+			default:
+				return Color.CHESTNUT;
+		}
+	}
+
+	private Style styleToColor(String style) {
+		switch (style.toUpperCase()) {
+			case "WHITE":
+				return Style.WHITE;
+			case "BLACK_DOTS":
+				return Style.BLACK_DOTS;
+			case "WHITE_DOTS":
+				return Style.WHITE_DOTS;
+			case "WHITEFIELD":
+				return Style.WHITEFIELD;
+			default:
+				return Style.NONE;
+		}
 	}
 	
 }

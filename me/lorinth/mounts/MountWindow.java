@@ -1,71 +1,42 @@
 package me.lorinth.mounts;
 
+import static me.lorinth.mounts.LorinthsMountsMain.ALL_MOUNTS;
+
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
-public class MountWindow {
+class MountWindow {
 
 	private LorinthsMountsMain main;
 	private Player player;
 	private Inventory inv;
-	private List<Mount> mounts;
+	private List<String> playerMounts;
 	
-	public MountWindow(LorinthsMountsMain main, List<Mount> mounts, Player player){
+	MountWindow(LorinthsMountsMain main, List<String> ownedMounts, Player player){
 		this.main = main;
-		this.mounts = mounts;
+		this.playerMounts = ownedMounts;
 		this.player = player;
 		
 		createWindow();
 		showPlayer();
 	}
 	
-	public void createWindow(){
-		String name = main.convertToMColors(main.windowName.replace("<name>", player.getDisplayName()));
+	private void createWindow(){
+		String name = main.convertToMColors(main.windowName);
 		
 		inv = Bukkit.getServer().createInventory(null, 27, name);
 		int slot = 0;
-		for(Mount mount : mounts){
-			inv.setItem(slot, mount.getDisplayItem());
+		for (String mount : playerMounts) {
+			inv.setItem(slot, ALL_MOUNTS.get(mount).getDisplayItem());
 			slot += 1;
 		}
 	}
 	
-	public void showPlayer(){
+	void showPlayer(){
 		player.openInventory(inv);
-	}
-	
-	public void handleClick(InventoryClickEvent event){
-		try{
-			Mount m = mounts.get(event.getSlot());
-			if(m != null && !main.mountCooldowns.contains(player)){
-				if(main.notify){
-					player.sendMessage(ChatColor.GREEN + "[Mounts] : You have mounted, " + m.getName());
-				}
-				
-				main.activeHorses.put(player, m.spawn(player));
-				player.closeInventory();
-				
-				main.mountCooldowns.add(player);
-				Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable(){
-
-					@Override
-					public void run() {
-						main.mountCooldowns.remove(player);
-					}
-					
-				}, main.cooldownDelay);
-			}
-		}
-		catch(IndexOutOfBoundsException error){
-			//pass
-		}
-		event.setCancelled(true);
-			
 	}
 	
 }
