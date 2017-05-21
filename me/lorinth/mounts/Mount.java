@@ -28,9 +28,9 @@ class Mount {
 	private double jump;
 	private double health;
 
-	private Material armor;
-	private Style style;
-	private Color color;
+	private String armor;
+	private String style;
+	private String color;
 	
 	Mount(String name, Material icon, List<String> lore, double spd, double jump, double hp, String armor, String variant, String color, String style){
 		this.variant = variant;
@@ -38,9 +38,9 @@ class Mount {
 		this.speed = spd;
 		this.jump = jump;
 		this.health = hp;
-		this.armor = Material.getMaterial(armor);
-		this.color = stringToColor(color);
-		this.style = styleToColor(style);
+		this.armor = armor;
+		this.color = color;
+		this.style = style;
 		
 		ItemStack display = new ItemStack(icon);
 
@@ -62,11 +62,11 @@ class Mount {
 		switch (variant.toUpperCase()) {
 			case "HORSE":
 				Horse horse = (Horse) player.getWorld().spawnEntity(player.getLocation(), EntityType.HORSE);
-				horse.setColor(color);
-				horse.setStyle(style);
+				horse.setColor(stringToColor(color));
+				horse.setStyle(stringToStyle(style));
 				horse.getInventory().setSaddle(new ItemStack(Material.SADDLE));
 				if (armor != null) {
-					horse.getInventory().setArmor(new ItemStack(armor));
+					horse.getInventory().setArmor(new ItemStack(Material.getMaterial(armor)));
 				}
 				genericHorse = horse;
 				break;
@@ -142,7 +142,7 @@ class Mount {
 		}
 	}
 
-	private Style styleToColor(String style) {
+	private Style stringToStyle(String style) {
 		switch (style.toUpperCase()) {
 			case "WHITE":
 				return Style.WHITE;
