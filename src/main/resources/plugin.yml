@@ -1,7 +1,12 @@
-name: LorinthsMounts
-main: me.lorinth.mounts.LorinthsMountsMain
-version: 1.0
+name: EpicMounts
+main: land.face.mounts.EpicMountsPlugin
+
+version: 1.0.0
+api-version: 1.14
 description: A plugin that provides a permissions based mount system
+
+authors: [Faceguy, Lorinthio, Lozke]
+
 commands:
-    mounts:
-        description: Opens up your mount options!
+  mounts:
+    description: Opens up your mount options!

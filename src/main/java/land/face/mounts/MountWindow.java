@@ -1,6 +1,6 @@
-package me.lorinth.mounts;
+package land.face.mounts;
 
-import static me.lorinth.mounts.LorinthsMountsMain.ALL_MOUNTS;
+import static land.face.mounts.EpicMountsPlugin.ALL_MOUNTS;
 
 import java.util.List;
 
@@ -10,12 +10,12 @@ import org.bukkit.inventory.Inventory;
 
 class MountWindow {
 
-	private LorinthsMountsMain main;
+	private EpicMountsPlugin main;
 	private Player player;
 	private Inventory inv;
 	private List<String> playerMounts;
 	
-	MountWindow(LorinthsMountsMain main, List<String> ownedMounts, Player player){
+	MountWindow(EpicMountsPlugin main, List<String> ownedMounts, Player player){
 		this.main = main;
 		this.playerMounts = ownedMounts;
 		this.player = player;

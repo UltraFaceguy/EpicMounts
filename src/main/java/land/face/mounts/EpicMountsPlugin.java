@@ -1,4 +1,4 @@
-package me.lorinth.mounts;
+package land.face.mounts;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class LorinthsMountsMain extends JavaPlugin implements Listener {
+public class EpicMountsPlugin extends JavaPlugin implements Listener {
 
   private ConsoleCommandSender console;
 
@@ -279,8 +279,7 @@ public class LorinthsMountsMain extends JavaPlugin implements Listener {
         if (h != null) {
           activeHorses.remove(ent);
           if (notify) {
-            ent.sendMessage(
-                ChatColor.GRAY + "[Mount] " + ChatColor.YELLOW + "[Mount] You have dismounted!");
+            ent.sendMessage(ChatColor.GRAY + "[Mount] " + ChatColor.YELLOW + "[Mount] You have dismounted!");
           }
           h.remove();
         }

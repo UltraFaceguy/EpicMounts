@@ -1,4 +1,4 @@
-package me.lorinth.mounts;
+package land.face.mounts;
 
 import java.util.List;
 
@@ -119,8 +119,8 @@ class Mount {
 		genericHorse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.2 * (speed / 100));
 
 		genericHorse.setPassenger(player);
-		if (LorinthsMountsMain.cachedDisguises.containsKey(id)) {
-			DisguiseAPI.disguiseToAll(genericHorse, LorinthsMountsMain.cachedDisguises.get(id));
+		if (EpicMountsPlugin.cachedDisguises.containsKey(id)) {
+			DisguiseAPI.disguiseToAll(genericHorse, EpicMountsPlugin.cachedDisguises.get(id));
 		}
 		return genericHorse;
 	}
