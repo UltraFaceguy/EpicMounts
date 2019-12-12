@@ -2,6 +2,7 @@ package me.lorinth.mounts;
 
 import java.util.List;
 
+import me.libraryaddict.disguise.DisguiseAPI;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.AbstractHorse;
@@ -23,6 +24,7 @@ class Mount {
 
 	private String variant;
 
+	private String id;
 	private String name;
 	private double speed;
 	private double jump;
@@ -32,7 +34,8 @@ class Mount {
 	private String style;
 	private String color;
 	
-	Mount(String name, Material icon, List<String> lore, double spd, double jump, double hp, String armor, String variant, String color, String style){
+	Mount(String id, String name, Material icon, List<String> lore, double spd, double jump, double hp, String armor, String variant, String color, String style){
+		this.id = id;
 		this.variant = variant;
 		this.name = name;
 		this.speed = spd;
@@ -116,6 +119,9 @@ class Mount {
 		genericHorse.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.2 * (speed / 100));
 
 		genericHorse.setPassenger(player);
+		if (LorinthsMountsMain.cachedDisguises.containsKey(id)) {
+			DisguiseAPI.disguiseToAll(genericHorse, LorinthsMountsMain.cachedDisguises.get(id));
+		}
 		return genericHorse;
 	}
 	
