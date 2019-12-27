@@ -1,370 +1,108 @@
 package land.face.mounts;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import me.libraryaddict.disguise.disguisetypes.Disguise;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.MobDisguise;
+import com.tealcube.minecraft.bukkit.shade.google.gson.Gson;
+import com.tealcube.minecraft.bukkit.shade.google.gson.GsonBuilder;
+import io.pixeloutlaw.minecraft.spigot.config.MasterConfiguration;
+import io.pixeloutlaw.minecraft.spigot.config.VersionedConfiguration;
+import io.pixeloutlaw.minecraft.spigot.config.VersionedSmartYamlConfiguration;
+import land.face.mounts.commands.MountsCommand;
+import land.face.mounts.data.Mount;
+import land.face.mounts.listeners.*;
+import land.face.mounts.managers.MountManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.AbstractHorse;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class EpicMountsPlugin extends JavaPlugin implements Listener {
+public class EpicMountsPlugin extends JavaPlugin {
 
-  private ConsoleCommandSender console;
+  private static EpicMountsPlugin epicMountsPlugin;
+  private MountManager mountManager;
 
-  public static HashMap<String, Mount> ALL_MOUNTS = new HashMap<>();
-  private HashMap<Player, AbstractHorse> activeHorses = new HashMap<>();
-  public static Map<String, Disguise> cachedDisguises = new HashMap<>();
-
-
-  public ArrayList<Player> mountCooldowns = new ArrayList<Player>();
-  public boolean notify = true;
-
-  private File mountsYaml;
-  private YamlConfiguration mountYml;
-
-  String windowName;
-  long cooldownDelay;
-
+  private MasterConfiguration settings;
+  private VersionedSmartYamlConfiguration configYAML;
 
   @Override
   public void onEnable() {
-    console = Bukkit.getServer().getConsoleSender();
-    loadMounts();
-    printLine("Has been enabled");
-    Bukkit.getServer().getPluginManager().registerEvents(this, this);
-  }
+    epicMountsPlugin = this;
 
-  private void loadMounts() {
-    mountsYaml = new File(getDataFolder(), "mounts.yml");
-    if (!mountsYaml.exists()) {
-      new File(this.getDataFolder() + "").mkdir();
-      try {
-        if (mountsYaml.createNewFile()) {
-          try {
-            PrintWriter writer = new PrintWriter(mountsYaml);
-            writer.write("Config:\n"
-                + "    Notify: true #shows mount/dismount messages to players\n"
-                + "    Cooldown: 20 #Cooldown, in seconds, between summons, set to 0 if you don't want a cooldown\n"
-                + "    WindowName: RPG_MOUNTS\n"
-                + "Mounts:\n"
-                + "    'IronSteed': #Use permission LMounts.IronSteed\n"
-                + "        DisplayName: '&5Iron Steed' #Display name on item and above mounts head, can take colors\n"
-                + "        Item: SADDLE\n"
-                + "        Lore: #This can take color codes\n"
-                + "        - '&6This mount is clad in iron armor'\n"
-                + "        - '&7Speed : 150%'\n"
-                + "        - '&8Jump : 120%'\n"
-                + "        Speed: 150 #% of player speed\n"
-                + "        Jump: 0.7 #Scales between 0 and 2, 0.7 is average\n"
-                + "        Health: 1 #1hp = 1 hit dead\n"
-                + "        Variant: HORSE\n");
-            writer.close();
-          } catch (IOException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
-          }
+    List<VersionedSmartYamlConfiguration> configurations = new ArrayList<>();
+    configurations.add(configYAML = defaultSettingsLoad("config.yml"));
+    for (VersionedSmartYamlConfiguration config : configurations) {
+      if (config.update()) {
+        getLogger().info("Updating " + config.getFileName());
+      }
+    }
+    settings = MasterConfiguration.loadFromFiles(configYAML);
+    mountManager = new MountManager(this);
+
+    File file = new File(getDataFolder().getPath() + "/mounts");
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    List<Mount> list = new ArrayList<>();
+    if (!getDataFolder().exists()) {
+      getDataFolder().mkdir();
+    }
+    if (!file.exists()) {
+      if (file.mkdir()) {
+        System.out.println("File Created");
+        List<String> lore = new ArrayList<>();
+        lore.add("Caca");
+        lore.add("Poopoo");
+        Mount mount = new Mount("DefaultMount", "Default", Material.LEATHER_HORSE_ARMOR, lore, 20.0, 10.0, 20.0, null, "HORSE", "BROWN", "WHITE");
+        list.add(mount);
+        try (FileWriter writer = new FileWriter(getDataFolder().getPath() + "/mounts" + "/DefaultMount.json")) {
+          gson.toJson(list, writer);
+        } catch (IOException e) {
+          e.printStackTrace();
         }
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        System.out.println(mountsYaml.getAbsolutePath());
-        e.printStackTrace();
       }
     }
-    mountYml = YamlConfiguration.loadConfiguration(mountsYaml);
-    boolean mountYmlChanged = false;
 
-    Set<String> configSettings = mountYml.getConfigurationSection("Config").getKeys(false);
-    notify = mountYml.getBoolean("Config.Notify");
-    cooldownDelay = mountYml.getLong("Config.Cooldown");
+    Bukkit.getPluginManager().registerEvents(new DamageListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new DismountListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new PlayerExitListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(this), this);
 
-    if (configSettings.contains("WindowName")) {
-      windowName = mountYml.getString("Config.WindowName");
-    } else {
-      mountYml.set("Config.WindowName", "RPG_MOUNTS");
-      windowName = "RPG_MOUNTS";
-      mountYmlChanged = true;
-    }
+    MountsCommand mountsCommand = new MountsCommand(this);
+    this.getCommand("mounts").setExecutor(mountsCommand);
 
-    for (String mountId : mountYml.getConfigurationSection("Mounts").getKeys(false)) {
-      Material item = Material.getMaterial(mountYml.getString("Mounts." + mountId + ".Item"));
-      String displayname = convertToMColors(mountYml.getString("Mounts." + mountId + ".DisplayName"));
-      double speed = mountYml.getDouble("Mounts." + mountId + ".Speed");
-      double jump = mountYml.getDouble("Mounts." + mountId + ".Jump");
-      double hp = mountYml.getDouble("Mounts." + mountId + ".Health");
-      List<String> lore = convertToMColors(mountYml.getStringList("Mounts." + mountId + ".Lore"));
-      String armor = null;
-      if (mountYml.contains("Mounts." + mountId + ".Armor")) {
-        armor = mountYml.getString("Mounts." + mountId + ".Armor");
-      }
-      String variant = "HORSE";
-      if (mountYml.contains("Mounts." + mountId + ".Variant")) {
-        variant = mountYml.getString("Mounts." + mountId + ".Variant");
-      }
-      String color = "BROWN";
-      if (mountYml.contains("Mounts." + mountId + ".Color")) {
-        color = mountYml.getString("Mounts." + mountId + ".Color");
-      }
-      String style = "NONE";
-      if (mountYml.contains("Mounts." + mountId + ".Style")) {
-        style = mountYml.getString("Mounts." + mountId + ".Style");
-      }
-      if (mountYml.contains("Mounts." + mountId + ".disguise")) {
-      	try {
-      		cacheDisguise(mountId, mountYml.getString("Mounts." + mountId + ".disguise"));
-				} catch (Exception e) {
-      		printErrorLine("Disguise not found for " + mountId);
-				}
-      }
-
-      Mount m = new Mount(
-      		mountId,
-          displayname,
-          item,
-          lore,
-          speed,
-          jump,
-          hp,
-          armor,
-          variant,
-          color,
-          style
-      );
-
-      ALL_MOUNTS.put(mountId, m);
-    }
-
-    if (mountYmlChanged) {
-      try {
-        mountYml.save(mountsYaml);
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        //e.printStackTrace();
-      }
-    }
+    Bukkit.getServer().getLogger().info("EpicMounts has been enabled");
   }
 
   @Override
   public void onDisable() {
-    printErrorLine("Has been disabled");
-
-    for (AbstractHorse p : activeHorses.values()) {
-      p.remove();
+    HandlerList.unregisterAll(this);
+    for (Mount mount : getMountManager().getActiveMounts().values()) {
+      mount.getMount().remove();
     }
-
-  }
-
-  private void cacheDisguise(String horseId, String disguiseType) {
-		DisguiseType type = DisguiseType.valueOf(disguiseType);
-		MobDisguise mobDisguise = new MobDisguise(type);
-		mobDisguise.setReplaceSounds(true);
-		cachedDisguises.put(horseId, mobDisguise);
-	}
-
-  void printLine(String line) {
-    console.sendMessage(ChatColor.GREEN + "[LorsMounts] : " + line);
-  }
-
-  void printErrorLine(String line) {
-    console.sendMessage(ChatColor.RED + "[LorsMounts] : " + line);
-  }
-
-  void printWarningLine(String line) {
-    console.sendMessage(ChatColor.YELLOW + "[LorsMounts] : " + line);
-  }
-
-  @EventHandler(priority = EventPriority.LOWEST)
-  public void OnHorseHit(EntityDamageEvent e) {
-    if (e.getEntity() instanceof AbstractHorse) {
-      if (activeHorses.containsValue(e.getEntity())) {
-        activeHorses.remove(e.getEntity().getPassenger());
-        ((AbstractHorse) e.getEntity()).getInventory().clear();
-        e.setDamage(0);
-        e.setCancelled(true);
-        e.getEntity().remove();
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (player.getOpenInventory().getTitle().equals(mountManager.getWindowName())) {
+        player.closeInventory();
       }
     }
+    Bukkit.getServer().getLogger().info("EpicMounts has been disabled");
   }
 
-  @EventHandler(priority = EventPriority.LOWEST)
-  public void OnHorseDeath(EntityDeathEvent e) {
-    if (e.getEntity() instanceof AbstractHorse) {
-      if (activeHorses.containsValue(e.getEntity())) {
-        activeHorses.remove(e.getEntity().getPassenger());
-        e.setDroppedExp(0);
-        e.getDrops().clear();
-      }
-    }
+  public static EpicMountsPlugin getInstance() {
+    return epicMountsPlugin;
   }
 
-  public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-    if (sender instanceof Player) {
-      Player player = (Player) sender;
-      if (commandLabel.equalsIgnoreCase("mounts")) {
-        MountWindow window = new MountWindow(this, getAvailableMounts(player), player);
-        window.showPlayer();
-      }
-    }
-    return false;
+  public MountManager getMountManager() {
+    return mountManager;
   }
 
-  @EventHandler
-  public void OnWindowClick(InventoryClickEvent event) {
-    if (event.getView().getTitle().equals(convertToMColors(windowName))) {
-      try {
-        Player p = (Player) event.getWhoClicked();
-        Mount m = ALL_MOUNTS.get(getAvailableMounts(p).get(event.getSlot()));
-        if (m != null && !mountCooldowns.contains(p)) {
-          if (notify) {
-            p.sendMessage(
-                ChatColor.GRAY + "[Mount] " + ChatColor.YELLOW + "You have mounted " + m.getName());
-          }
-          activeHorses.put(p, m.spawn(p));
-          p.closeInventory();
-          mountCooldowns.add(p);
-          Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-            @Override
-            public void run() {
-              mountCooldowns.remove(p);
-            }
-          }, cooldownDelay);
-        }
-      } catch (IndexOutOfBoundsException error) {
-        //pass
-      }
-      event.setCancelled(true);
-    }
+  private VersionedSmartYamlConfiguration defaultSettingsLoad(String name) {
+    return new VersionedSmartYamlConfiguration(new File(getDataFolder(), name),
+            getResource(name), VersionedConfiguration.VersionUpdateType.BACKUP_AND_UPDATE);
   }
 
-  @EventHandler
-  public void OnHorseInventoryOpen(InventoryOpenEvent e) {
-    if (activeHorses.containsKey(e.getPlayer())) {
-      e.setCancelled(true);
-    }
+  public MasterConfiguration getSettings() {
+    return settings;
   }
-
-  @EventHandler
-  public void OnHorseDismount(VehicleExitEvent event) {
-    if (event.getVehicle() instanceof AbstractHorse) {
-      Entity ent = event.getExited();
-      if (ent instanceof Player) {
-        AbstractHorse h = activeHorses.get(ent);
-        if (h != null) {
-          activeHorses.remove(ent);
-          if (notify) {
-            ent.sendMessage(ChatColor.GRAY + "[Mount] " + ChatColor.YELLOW + "[Mount] You have dismounted!");
-          }
-          h.remove();
-        }
-      }
-    }
-  }
-
-  @EventHandler
-  public void OnPlayerHit(EntityDamageEvent event) {
-    if (event.getEntity() instanceof Player) {
-      Player player = (Player) event.getEntity();
-      if (activeHorses.containsKey(player)) {
-        AbstractHorse h = activeHorses.get(player);
-
-        activeHorses.remove(player);
-
-        if (notify) {
-          player.sendMessage(
-              ChatColor.GRAY + "[Mount] " + ChatColor.YELLOW + "You have dismounted from combat!");
-        }
-
-        h.remove();
-      }
-    }
-  }
-
-  @EventHandler
-  public void OnEntityDamage(EntityDamageByEntityEvent event) {
-    if (event.getDamager() instanceof Player) {
-      Player player = (Player) event.getDamager();
-      if (activeHorses.containsKey(player)) {
-        AbstractHorse h = activeHorses.get(player);
-
-        activeHorses.remove(player);
-
-        if (notify) {
-          player.sendMessage(ChatColor.GRAY + "[Mount] : You have dismounted from combat!");
-        }
-
-        h.remove();
-      }
-    }
-  }
-
-  @EventHandler
-  public void OnPlayerQuit(PlayerQuitEvent event) {
-    Player player = event.getPlayer();
-    if (activeHorses.containsKey(player)) {
-      AbstractHorse h = activeHorses.get(player);
-      activeHorses.remove(player);
-      h.remove();
-    }
-  }
-
-  @EventHandler
-  public void OnPlayerKicked(PlayerKickEvent event) {
-    Player player = event.getPlayer();
-    if (activeHorses.containsKey(player)) {
-      AbstractHorse h = activeHorses.get(player);
-      activeHorses.remove(player);
-      h.remove();
-    }
-  }
-
-  private List<String> getAvailableMounts(Player player) {
-    List<String> available = new ArrayList<>();
-    for (String name : ALL_MOUNTS.keySet()) {
-      if (player.hasPermission("LMounts." + name)) {
-        available.add(name);
-      }
-    }
-
-    return available;
-  }
-
-  String convertToMColors(String line) {
-    return line.replaceAll("&", "§");
-  }
-
-  private List<String> convertToMColors(List<String> lines) {
-    List<String> newLines = new ArrayList<String>();
-    for (String line : lines) {
-      newLines.add(convertToMColors(line));
-    }
-    return newLines;
-  }
-
 }
