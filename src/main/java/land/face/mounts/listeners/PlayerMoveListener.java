@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 public class PlayerMoveListener implements Listener {
 
-    private EpicMountsPlugin plugin;
     private MountManager manager;
 
     private ArrayList<String> mountTypes;
@@ -24,7 +23,6 @@ public class PlayerMoveListener implements Listener {
     private double pathSpeed;
 
     public PlayerMoveListener(EpicMountsPlugin plugin) {
-        this.plugin = plugin;
         this.manager = plugin.getMountManager();
         this.mountTypes = new ArrayList<>();
         this.pathBlocks = new ArrayList<>();

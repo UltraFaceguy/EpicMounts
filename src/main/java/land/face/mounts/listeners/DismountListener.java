@@ -1,6 +1,5 @@
 package land.face.mounts.listeners;
 
-import land.face.mounts.EpicMountsPlugin;
 import land.face.mounts.managers.MountManager;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
@@ -11,12 +10,10 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 
 public class DismountListener implements Listener {
 
-    private EpicMountsPlugin plugin;
     private MountManager mountManager;
 
-    public DismountListener(EpicMountsPlugin plugin) {
-        this.plugin = plugin;
-        this.mountManager = plugin.getMountManager();
+    public DismountListener(MountManager manager) {
+        this.mountManager = manager;
     }
 
     @EventHandler

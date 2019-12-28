@@ -63,13 +63,13 @@ public class EpicMountsPlugin extends JavaPlugin {
       }
     }
 
-    Bukkit.getPluginManager().registerEvents(new DamageListener(this), this);
-    Bukkit.getPluginManager().registerEvents(new DismountListener(this), this);
-    Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
-    Bukkit.getPluginManager().registerEvents(new PlayerExitListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new DamageListener(mountManager), this);
+    Bukkit.getPluginManager().registerEvents(new DismountListener(mountManager), this);
+    Bukkit.getPluginManager().registerEvents(new InventoryListener(mountManager), this);
+    Bukkit.getPluginManager().registerEvents(new PlayerExitListener(mountManager), this);
     Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(this), this);
 
-    MountsCommand mountsCommand = new MountsCommand(this);
+    MountsCommand mountsCommand = new MountsCommand(mountManager);
     this.getCommand("mounts").setExecutor(mountsCommand);
 
     Bukkit.getServer().getLogger().info("EpicMounts has been enabled");
