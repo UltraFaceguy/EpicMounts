@@ -1,6 +1,5 @@
 package land.face.mounts.listeners;
 
-import land.face.mounts.EpicMountsPlugin;
 import land.face.mounts.managers.MountManager;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
@@ -14,12 +13,10 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class DamageListener implements Listener {
 
-    public EpicMountsPlugin plugin;
     private MountManager manager;
 
-    public DamageListener(EpicMountsPlugin plugin) {
-        this.plugin = plugin;
-        this.manager = plugin.getMountManager();
+    public DamageListener(MountManager manager) {
+        this.manager = manager;
     }
 
     @EventHandler

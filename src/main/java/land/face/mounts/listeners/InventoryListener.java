@@ -1,7 +1,6 @@
 package land.face.mounts.listeners;
 
 import com.tealcube.minecraft.bukkit.TextUtils;
-import land.face.mounts.EpicMountsPlugin;
 import land.face.mounts.data.Mount;
 import land.face.mounts.managers.MountManager;
 import org.bukkit.entity.Player;
@@ -12,12 +11,10 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 
 public class InventoryListener implements Listener {
 
-    private EpicMountsPlugin plugin;
     private MountManager mountManager;
 
-    public InventoryListener(EpicMountsPlugin plugin) {
-        this.plugin = plugin;
-        this.mountManager = plugin.getMountManager();
+    public InventoryListener(MountManager manager) {
+        this.mountManager = manager;
     }
 
     @EventHandler

@@ -10,12 +10,10 @@ import org.bukkit.entity.Player;
 
 public class MountsCommand implements CommandExecutor {
 
-    private EpicMountsPlugin plugin;
     private MountManager manager;
 
-    public MountsCommand(EpicMountsPlugin plugin) {
-        this.plugin = plugin;
-        this.manager = plugin.getMountManager();
+    public MountsCommand(MountManager manager) {
+        this.manager = manager;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
