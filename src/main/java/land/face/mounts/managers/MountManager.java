@@ -136,7 +136,7 @@ public class MountManager {
             for (double y = -1; y < 3; y++)
                 for (double x = player.getLocation().getBlock().getRelative(BlockFace.SOUTH_WEST).getLocation().getX(); x <= player.getLocation().getBlock().getRelative(BlockFace.NORTH_EAST).getLocation().getX(); x++) {
                     for (double z = player.getLocation().getBlock().getRelative(BlockFace.NORTH_EAST).getLocation().getZ(); z <= player.getLocation().getBlock().getRelative(BlockFace.SOUTH_WEST).getLocation().getZ(); z++) {
-                        Location loc = new Location(player.getWorld(), x, player.getLocation().getY() + y, z);
+                        Location loc = new Location(player.getWorld(), x, Math.ceil(player.getLocation().getY()) + y, z);
                         if (y == -1 && loc.getBlock().getType() == Material.AIR) {
                             loc.setY(loc.getY() - 1);
                             if (loc.getBlock().getType() == Material.AIR) {
