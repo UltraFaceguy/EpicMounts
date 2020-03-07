@@ -31,6 +31,7 @@ public class MountManager {
     private String invalidLocation;
     private String noMounts;
     private String cooldown;
+    private String despawn;
 
     public MountManager(EpicMountsPlugin plugin) {
         this.plugin = plugin;
@@ -41,6 +42,7 @@ public class MountManager {
         invalidLocation = plugin.getSettings().getString("config.language.invalid_location", "&cCould not summon mount at this location, move to a more open location!");
         noMounts = plugin.getSettings().getString("config.language.no_mounts", "&cYou do not have any available mounts!");
         cooldown = plugin.getSettings().getString("config.language.cooldown", "&cCooling Down!");
+        despawn = plugin.getSettings().getString("config.language.despawn", "&oYour mount wandered away...");
     }
 
     public String getWindowName() {
@@ -70,7 +72,11 @@ public class MountManager {
     public String getCooldownMessage() {
         return cooldown;
     }
-    
+
+    public String getDespawnMessage() {
+        return despawn;
+    }
+
     public void setMount(Player player, Mount mount) {
         activeMounts.put(player.getUniqueId(), mount);
     }
