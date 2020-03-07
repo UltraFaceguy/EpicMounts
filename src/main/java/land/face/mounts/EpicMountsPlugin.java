@@ -64,10 +64,10 @@ public class EpicMountsPlugin extends JavaPlugin {
     }
 
     Bukkit.getPluginManager().registerEvents(new DamageListener(mountManager), this);
-    Bukkit.getPluginManager().registerEvents(new DismountListener(mountManager), this);
     Bukkit.getPluginManager().registerEvents(new InventoryListener(mountManager), this);
     Bukkit.getPluginManager().registerEvents(new PlayerExitListener(mountManager), this);
     Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new ChunkUnloadListener(mountManager), this);
 
     MountsCommand mountsCommand = new MountsCommand(mountManager);
     this.getCommand("mounts").setExecutor(mountsCommand);
