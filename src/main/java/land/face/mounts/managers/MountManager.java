@@ -187,4 +187,8 @@ public class MountManager {
             }
         }, cooldownDelay);
     }
+
+    public boolean isMount(Entity entity) {
+        return getMount(entity) != null;
+    }
 }
