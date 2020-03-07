@@ -20,7 +20,7 @@ import java.util.*;
 public class MountManager {
 
     private EpicMountsPlugin plugin;
-    
+
     private HashMap<UUID, Mount> activeMounts = new HashMap<>();
     private ArrayList<UUID> mountCooldowns = new ArrayList<>();
 
@@ -98,11 +98,15 @@ public class MountManager {
         return null;
     }
 
+    public void removeMount(Entity entity) {
+        removeMount(getMount(entity).getMountOwner());
+    }
+
     public void removeMount(Player player) {
         activeMounts.get(player.getUniqueId()).getMount().remove();
         activeMounts.remove(player.getUniqueId());
     }
-    
+
     public List getAllMounts() {
         List<Mount> list = null;
         try {
