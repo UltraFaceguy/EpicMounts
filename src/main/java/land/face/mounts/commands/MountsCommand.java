@@ -1,39 +1,42 @@
 package land.face.mounts.commands;
 
 import com.tealcube.minecraft.bukkit.TextUtils;
-import land.face.mounts.EpicMountsPlugin;
+import com.tealcube.minecraft.bukkit.shade.acf.BaseCommand;
+import com.tealcube.minecraft.bukkit.shade.acf.annotation.CommandAlias;
+import com.tealcube.minecraft.bukkit.shade.acf.annotation.Default;
+import com.tealcube.minecraft.bukkit.shade.acf.annotation.Subcommand;
+import land.face.mounts.data.Mount;
 import land.face.mounts.managers.MountManager;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class MountsCommand implements CommandExecutor {
+@CommandAlias("mount|mounts")
+public class MountsCommand extends BaseCommand {
 
-    private MountManager manager;
+    private final MountManager manager;
 
     public MountsCommand(MountManager manager) {
         this.manager = manager;
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (!(sender instanceof Player)) {
-            return true;
-        }
-        Player player = (Player) sender;
+    @Default
+    public void onDefault(Player player) {
         if (manager.getAvailableMounts(player).isEmpty()) {
             player.sendMessage(TextUtils.color(manager.getPrefix() + manager.getNoMountsMessage()));
-            return true;
         }
         if (manager.hasCooldown(player)) {
             player.sendMessage(TextUtils.color(manager.getPrefix() + manager.getCooldownMessage()));
-            return true;
         }
         if (!manager.canMount(player)) {
             player.sendMessage(TextUtils.color(manager.getPrefix() + manager.getInvalidLocationMessage()));
-            return true;
         }
         manager.showGUI(player);
-        return true;
+    }
+
+    @Subcommand("test")
+    public void onTest(Player player, String mountID) {
+        Mount m = manager.getMount(mountID);
+        m.spawnMount(player);
     }
 }

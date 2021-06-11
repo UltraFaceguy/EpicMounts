@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tealcube.minecraft.bukkit.shade.acf.BukkitCommandManager;
 import io.pixeloutlaw.minecraft.spigot.config.MasterConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedSmartYamlConfiguration;
@@ -44,8 +45,8 @@ public class EpicMountsPlugin extends JavaPlugin {
     Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(this), this);
     Bukkit.getPluginManager().registerEvents(new ChunkUnloadListener(mountManager), this);
 
-    MountsCommand mountsCommand = new MountsCommand(mountManager);
-    this.getCommand("mounts").setExecutor(mountsCommand);
+    BukkitCommandManager bukkitCommandManager = new BukkitCommandManager(this);
+    bukkitCommandManager.registerCommand(new MountsCommand(mountManager));
 
     Bukkit.getServer().getLogger().info("EpicMounts has been enabled");
   }
