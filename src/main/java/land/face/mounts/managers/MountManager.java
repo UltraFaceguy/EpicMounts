@@ -7,6 +7,7 @@ import land.face.mounts.EpicMountsPlugin;
 import land.face.mounts.data.Horse;
 import land.face.mounts.data.Mount;
 import land.face.mounts.utils.GsonUtils;
+import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,12 +22,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+@Data
 public class MountManager {
 
     private final EpicMountsPlugin plugin;
     private final String path;
 
-    private       Map<String, Mount> loadedMounts = new HashMap<>();
+    private final Map<String, Mount> loadedMounts = new HashMap<>();
 
     private       HashMap<UUID, Horse> activeMounts = new HashMap<>();
     private       ArrayList<UUID> mountCooldowns = new ArrayList<>();
@@ -34,11 +36,11 @@ public class MountManager {
     private final String windowName;
     private final Long cooldownDelay;
     private final String prefix;
-    private final String mounted;
-    private final String invalidLocation;
-    private final String noMounts;
-    private final String cooldown;
-    private final String despawn;
+    private final String mountedMessage;
+    private final String invalidLocationMessage;
+    private final String noMountsMessage;
+    private final String cooldownMessage;
+    private final String despawnMessage;
 
     public MountManager(EpicMountsPlugin plugin) {
         this.plugin = plugin;
@@ -46,47 +48,15 @@ public class MountManager {
         cooldownDelay = plugin.getSettings().getLong("config.Cooldown", 0);
         windowName = plugin.getSettings().getString("config.WindowName", "Epic Gamer Mounts!");
         prefix = plugin.getSettings().getString("config.language.prefix", "&7[Mounts] ");
-        mounted = plugin.getSettings().getString("config.language.mounted", "&eYou have mounted {mountname}!");
-        invalidLocation = plugin.getSettings().getString("config.language.invalid_location", "&cCould not summon mount at this location, move to a more open location!");
-        noMounts = plugin.getSettings().getString("config.language.no_mounts", "&cYou do not have any available mounts!");
-        cooldown = plugin.getSettings().getString("config.language.cooldown", "&cCooling Down!");
-        despawn = plugin.getSettings().getString("config.language.despawn", "&oYour mount wandered away...");
-    }
-
-    public String getWindowName() {
-        return windowName;
-    }
-
-    public Long getCooldownDelay() {
-        return cooldownDelay;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public String getMountedMessage() {
-        return mounted;
-    }
-
-    public String getInvalidLocationMessage() {
-        return invalidLocation;
-    }
-
-    public String getNoMountsMessage() {
-        return noMounts;
-    }
-
-    public String getCooldownMessage() {
-        return cooldown;
-    }
-
-    public String getDespawnMessage() {
-        return despawn;
+        mountedMessage = plugin.getSettings().getString("config.language.mounted", "&eYou have mounted {mountname}!");
+        invalidLocationMessage = plugin.getSettings().getString("config.language.invalid_location", "&cCould not summon mount at this location, move to a more open location!");
+        noMountsMessage = plugin.getSettings().getString("config.language.no_mounts", "&cYou do not have any available mounts!");
+        cooldownMessage = plugin.getSettings().getString("config.language.cooldown", "&cCooling Down!");
+        despawnMessage = plugin.getSettings().getString("config.language.despawn", "&oYour mount wandered away...");
     }
 
     public void loadMounts() {
-        loadedMounts = new HashMap<>();
+        loadedMounts.clear();
         try {
             Files.walk(Paths.get(path))
                     .filter(Files::isRegularFile)
@@ -122,10 +92,6 @@ public class MountManager {
                 exception.printStackTrace();
             }
         }
-    }
-
-    public Map<String, Mount> getLoadedMounts() {
-        return loadedMounts;
     }
 
     public boolean isLoaded(String mountID) {
@@ -239,7 +205,7 @@ public class MountManager {
     }
 
     public void equipMount(Player player, Horse mount) {
-        player.sendMessage(TextUtils.color(prefix + mounted).replace("{mountname}", "mount.getName()"));
+        player.sendMessage(TextUtils.color(prefix + mountedMessage).replace("{mountname}", "mount.getName()"));
         //mount.setMountOwner(player);
         setMount(player, mount);
         mountCooldowns.add(player.getUniqueId());
