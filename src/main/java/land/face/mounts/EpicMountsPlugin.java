@@ -37,7 +37,9 @@ public class EpicMountsPlugin extends JavaPlugin {
       }
     }
     settings = MasterConfiguration.loadFromFiles(configYAML);
+
     mountManager = new MountManager(this);
+    mountManager.loadMounts();
 
     Bukkit.getPluginManager().registerEvents(new DamageListener(mountManager), this);
     Bukkit.getPluginManager().registerEvents(new InventoryListener(mountManager), this);
@@ -62,6 +64,7 @@ public class EpicMountsPlugin extends JavaPlugin {
         player.closeInventory();
       }
     }
+    mountManager.saveMounts();
     Bukkit.getServer().getLogger().info("EpicMounts has been disabled");
   }
 
