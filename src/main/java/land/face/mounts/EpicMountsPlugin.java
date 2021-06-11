@@ -2,6 +2,7 @@ package land.face.mounts;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.tealcube.minecraft.bukkit.shade.acf.BukkitCommandManager;
@@ -20,6 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class EpicMountsPlugin extends JavaPlugin {
 
   private static EpicMountsPlugin epicMountsPlugin;
+  private BukkitCommandManager commandManager;
+
   private MountManager mountManager;
 
   private MasterConfiguration settings;
@@ -46,9 +49,10 @@ public class EpicMountsPlugin extends JavaPlugin {
     Bukkit.getPluginManager().registerEvents(new PlayerExitListener(mountManager), this);
     Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(this), this);
     Bukkit.getPluginManager().registerEvents(new ChunkUnloadListener(mountManager), this);
+    Bukkit.getPluginManager().registerEvents(new EpicDismountListener(),this);
 
-    BukkitCommandManager bukkitCommandManager = new BukkitCommandManager(this);
-    bukkitCommandManager.registerCommand(new MountsCommand(mountManager));
+    commandManager = new BukkitCommandManager(this);
+    commandManager.registerCommand(new MountsCommand(mountManager));
 
     Bukkit.getServer().getLogger().info("EpicMounts has been enabled");
   }
@@ -70,6 +74,10 @@ public class EpicMountsPlugin extends JavaPlugin {
 
   public static EpicMountsPlugin getInstance() {
     return epicMountsPlugin;
+  }
+
+  public void registerCommandCompletion(String id, Collection<String> completions) {
+    commandManager.getCommandCompletions().registerAsyncCompletion(id, c -> completions);
   }
 
   public MountManager getMountManager() {

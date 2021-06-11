@@ -70,6 +70,7 @@ public class MountManager {
                 e.printStackTrace();
             }
         }
+        plugin.registerCommandCompletion("mount-ids",loadedMounts.keySet());
     }
 
     private void load(File file) {
