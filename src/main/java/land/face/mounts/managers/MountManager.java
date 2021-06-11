@@ -44,7 +44,7 @@ public class MountManager {
 
     public MountManager(EpicMountsPlugin plugin) {
         this.plugin = plugin;
-        this.path = plugin.getDataFolder() + File.separator + "EpicMounts";
+        this.path = plugin.getDataFolder() + File.separator + "MountData";
         cooldownDelay = plugin.getSettings().getLong("config.Cooldown", 0);
         windowName = plugin.getSettings().getString("config.WindowName", "Epic Gamer Mounts!");
         prefix = plugin.getSettings().getString("config.language.prefix", "&7[Mounts] ");
@@ -64,7 +64,11 @@ public class MountManager {
                     .map(Path::toFile)
                     .forEach(this::load);
         } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                Files.createDirectory(Paths.get(path));
+            } catch (Exception e2) {
+                e.printStackTrace();
+            }
         }
     }
 
