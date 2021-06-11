@@ -85,7 +85,7 @@ public class MountManager {
         return despawn;
     }
 
-    public void loadMobs() {
+    public void loadMounts() {
         loadedMounts = new HashMap<>();
         try {
             Files.walk(Paths.get(path))
@@ -108,9 +108,9 @@ public class MountManager {
         }
     }
 
-    public void saveMobs() {
+    public void saveMounts() {
         if (loadedMounts.isEmpty()) {
-            Bukkit.getLogger().warning("No entities to save to Entities.json");
+            Bukkit.getLogger().warning("No mount data to save!");
             return;
         }
         for (String mountID : loadedMounts.keySet()) {
