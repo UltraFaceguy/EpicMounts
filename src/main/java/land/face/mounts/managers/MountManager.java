@@ -5,6 +5,8 @@ import com.tealcube.minecraft.bukkit.shade.google.gson.GsonBuilder;
 import com.tealcube.minecraft.bukkit.shade.google.gson.reflect.TypeToken;
 import land.face.mounts.EpicMountsPlugin;
 import land.face.mounts.data.Horse;
+import land.face.mounts.data.Mount;
+import land.face.mounts.utils.GsonUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,13 +15,18 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class MountManager {
 
-    private EpicMountsPlugin plugin;
+    private final EpicMountsPlugin plugin;
+    private final String path;
+
+    private Map<String, Mount> loadedMounts = new HashMap<>();
 
     private HashMap<UUID, Horse> activeMounts = new HashMap<>();
     private ArrayList<UUID> mountCooldowns = new ArrayList<>();
@@ -35,6 +42,7 @@ public class MountManager {
 
     public MountManager(EpicMountsPlugin plugin) {
         this.plugin = plugin;
+        this.path = plugin.getDataFolder() + File.separator + "EpicMounts";
         cooldownDelay = plugin.getSettings().getLong("config.Cooldown", 0);
         windowName = plugin.getSettings().getString("config.WindowName", "Epic Gamer Mounts!");
         prefix = plugin.getSettings().getString("config.language.prefix", "&7[Mounts] ");
@@ -75,6 +83,57 @@ public class MountManager {
 
     public String getDespawnMessage() {
         return despawn;
+    }
+
+    public void loadMobs() {
+        loadedMounts = new HashMap<>();
+        try {
+            Files.walk(Paths.get(path))
+                    .filter(Files::isRegularFile)
+                    .filter(p -> p.toString().endsWith(".json"))
+                    .map(Path::toFile)
+                    .forEach(this::load);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void load(File file) {
+        try {
+            Mount mount = GsonUtils.getGson().fromJson(new FileReader(file), Mount.class);
+            loadedMounts.put(mount.getId(), mount);
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveMobs() {
+        if (loadedMounts.isEmpty()) {
+            Bukkit.getLogger().warning("No entities to save to Entities.json");
+            return;
+        }
+        for (String mountID : loadedMounts.keySet()) {
+            try {
+                FileWriter writer = new FileWriter(String.format("%s%s%s.json", path, File.separator, mountID));
+                GsonUtils.getGson().toJson(loadedMounts.get(mountID), writer);
+                writer.flush();
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        }
+    }
+
+    public Map<String, Mount> getLoadedMounts() {
+        return loadedMounts;
+    }
+
+    public boolean isLoaded(String mountID) {
+        return getMount(mountID) != null;
+    }
+
+    public Mount getMount(String mountID) {
+        return loadedMounts.get(mountID);
     }
 
     public void setMount(Player player, Horse mount) {

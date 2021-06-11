@@ -1,13 +1,16 @@
 package land.face.mounts.data;
 
+import lombok.Data;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+@Data
 public class Mount {
 
     private Player mountOwner;
 
+    private String id;
     private EntityType entityType;
 
     public Mount(EntityType entityType) {

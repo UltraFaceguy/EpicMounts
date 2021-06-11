@@ -4,8 +4,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tealcube.minecraft.bukkit.shade.google.gson.Gson;
-import com.tealcube.minecraft.bukkit.shade.google.gson.GsonBuilder;
 import io.pixeloutlaw.minecraft.spigot.config.MasterConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedSmartYamlConfiguration;
@@ -14,7 +12,6 @@ import land.face.mounts.data.Horse;
 import land.face.mounts.listeners.*;
 import land.face.mounts.managers.MountManager;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,28 +37,6 @@ public class EpicMountsPlugin extends JavaPlugin {
     }
     settings = MasterConfiguration.loadFromFiles(configYAML);
     mountManager = new MountManager(this);
-
-    File file = new File(getDataFolder().getPath() + "/mounts");
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    List<Horse> list = new ArrayList<>();
-    if (!getDataFolder().exists()) {
-      getDataFolder().mkdir();
-    }
-    if (!file.exists()) {
-      if (file.mkdir()) {
-        System.out.println("File Created");
-        List<String> lore = new ArrayList<>();
-        lore.add("Caca");
-        lore.add("Poopoo");
-        Horse mount = new Horse("DefaultMount", "Default", Material.LEATHER_HORSE_ARMOR, lore, 20.0, 10.0, 20.0, null, "HORSE", "BROWN", "WHITE");
-        list.add(mount);
-        try (FileWriter writer = new FileWriter(getDataFolder().getPath() + "/mounts" + "/DefaultMount.json")) {
-          gson.toJson(list, writer);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    }
 
     Bukkit.getPluginManager().registerEvents(new DamageListener(mountManager), this);
     Bukkit.getPluginManager().registerEvents(new InventoryListener(mountManager), this);
