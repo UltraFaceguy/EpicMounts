@@ -2,7 +2,7 @@ name: EpicMounts
 main: land.face.mounts.EpicMountsPlugin
 
 version: 1.0.0
-api-version: 1.15.2
+api-version: 1.16
 description: A plugin that provides a permissions based mount system
 
 authors: [Faceguy, Lorinthio, Lozke]
