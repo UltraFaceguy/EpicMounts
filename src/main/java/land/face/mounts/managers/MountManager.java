@@ -173,7 +173,7 @@ public class MountManager {
         Inventory inv = Bukkit.getServer().createInventory(null, (int)(9 * rows), name);
         int slot = 0;
         for (Horse mount : playerMounts) {
-            inv.setItem(slot, mount.getDisplayItem());
+            inv.setItem(slot, mount.getIcon());
             slot += 1;
         }
         player.openInventory(inv);

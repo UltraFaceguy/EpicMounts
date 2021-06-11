@@ -1,6 +1,8 @@
 package land.face.mounts.data;
 
 import land.face.mounts.managers.MountManager;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -11,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 import java.util.UUID;
 
+@Data
 public class Horse extends Mount {
 
     private transient ItemStack icon;
@@ -50,10 +53,6 @@ public class Horse extends Mount {
         meta.setDisplayName(name);
         meta.setLore(lore);
         icon.setItemMeta(meta);
-    }
-
-    public Horse() {
-        super(EntityType.HORSE);
     }
 
     @Override
@@ -123,5 +122,9 @@ public class Horse extends Mount {
 
     public Entity getMount() {
         return mount;
+    }
+
+    public void remove() {
+        mount.remove();
     }
 }
