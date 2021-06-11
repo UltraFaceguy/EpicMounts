@@ -26,19 +26,19 @@ public class MountManager {
     private final EpicMountsPlugin plugin;
     private final String path;
 
-    private Map<String, Mount> loadedMounts = new HashMap<>();
+    private       Map<String, Mount> loadedMounts = new HashMap<>();
 
-    private HashMap<UUID, Horse> activeMounts = new HashMap<>();
-    private ArrayList<UUID> mountCooldowns = new ArrayList<>();
+    private       HashMap<UUID, Horse> activeMounts = new HashMap<>();
+    private       ArrayList<UUID> mountCooldowns = new ArrayList<>();
 
-    private String windowName;
-    private Long cooldownDelay;
-    private String prefix;
-    private String mounted;
-    private String invalidLocation;
-    private String noMounts;
-    private String cooldown;
-    private String despawn;
+    private final String windowName;
+    private final Long cooldownDelay;
+    private final String prefix;
+    private final String mounted;
+    private final String invalidLocation;
+    private final String noMounts;
+    private final String cooldown;
+    private final String despawn;
 
     public MountManager(EpicMountsPlugin plugin) {
         this.plugin = plugin;
