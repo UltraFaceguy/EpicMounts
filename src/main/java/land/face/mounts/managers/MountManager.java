@@ -4,7 +4,7 @@ import com.tealcube.minecraft.bukkit.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.google.gson.GsonBuilder;
 import com.tealcube.minecraft.bukkit.shade.google.gson.reflect.TypeToken;
 import land.face.mounts.EpicMountsPlugin;
-import land.face.mounts.data.Mount;
+import land.face.mounts.data.Horse;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,8 +20,8 @@ import java.util.*;
 public class MountManager {
 
     private EpicMountsPlugin plugin;
-    
-    private HashMap<UUID, Mount> activeMounts = new HashMap<>();
+
+    private HashMap<UUID, Horse> activeMounts = new HashMap<>();
     private ArrayList<UUID> mountCooldowns = new ArrayList<>();
 
     private String windowName;
@@ -31,6 +31,7 @@ public class MountManager {
     private String invalidLocation;
     private String noMounts;
     private String cooldown;
+    private String despawn;
 
     public MountManager(EpicMountsPlugin plugin) {
         this.plugin = plugin;
@@ -41,6 +42,7 @@ public class MountManager {
         invalidLocation = plugin.getSettings().getString("config.language.invalid_location", "&cCould not summon mount at this location, move to a more open location!");
         noMounts = plugin.getSettings().getString("config.language.no_mounts", "&cYou do not have any available mounts!");
         cooldown = plugin.getSettings().getString("config.language.cooldown", "&cCooling Down!");
+        despawn = plugin.getSettings().getString("config.language.despawn", "&oYour mount wandered away...");
     }
 
     public String getWindowName() {
@@ -70,8 +72,12 @@ public class MountManager {
     public String getCooldownMessage() {
         return cooldown;
     }
-    
-    public void setMount(Player player, Mount mount) {
+
+    public String getDespawnMessage() {
+        return despawn;
+    }
+
+    public void setMount(Player player, Horse mount) {
         activeMounts.put(player.getUniqueId(), mount);
     }
 
@@ -79,11 +85,11 @@ public class MountManager {
         return activeMounts.containsKey(player.getUniqueId());
     }
 
-    public Mount getMount(Player player) {
+    public Horse getMount(Player player) {
         return activeMounts.get(player.getUniqueId());
     }
 
-    public Mount getMount(Entity entity) {
+    public Horse getMount(Entity entity) {
         for (UUID uuid : activeMounts.keySet()) {
             if (activeMounts.get(uuid).getMount() == entity) {
                 return activeMounts.get(uuid);
@@ -92,27 +98,31 @@ public class MountManager {
         return null;
     }
 
+    public void removeMount(Entity entity) {
+        removeMount(getMount(entity).getMountOwner());
+    }
+
     public void removeMount(Player player) {
         activeMounts.get(player.getUniqueId()).getMount().remove();
         activeMounts.remove(player.getUniqueId());
     }
-    
+
     public List getAllMounts() {
-        List<Mount> list = null;
+        List<Horse> list = null;
         try {
-            list = new GsonBuilder().setPrettyPrinting().create().fromJson(new FileReader(plugin.getDataFolder().getPath() + "/mounts" + "/DefaultMount.json"), new TypeToken<List<Mount>>() {}.getType());
+            list = new GsonBuilder().setPrettyPrinting().create().fromJson(new FileReader(plugin.getDataFolder().getPath() + "/mounts" + "/DefaultMount.json"), new TypeToken<List<Horse>>() {}.getType());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return list;
     }
 
-    public List<Mount> getAvailableMounts(Player player) {
-        ArrayList<Mount> available = new ArrayList<>();
+    public List<Horse> getAvailableMounts(Player player) {
+        ArrayList<Horse> available = new ArrayList<>();
         try {
-            List<Mount> list;
-            list = new GsonBuilder().setPrettyPrinting().create().fromJson(new FileReader(plugin.getDataFolder().getPath() + "/mounts" + "/DefaultMount.json"), new TypeToken<List<Mount>>() {}.getType());
-            for (Mount mount : list) {
+            List<Horse> list;
+            list = new GsonBuilder().setPrettyPrinting().create().fromJson(new FileReader(plugin.getDataFolder().getPath() + "/mounts" + "/DefaultMount.json"), new TypeToken<List<Horse>>() {}.getType());
+            for (Horse mount : list) {
                 if (player.hasPermission("EpicMounts." + mount.getId())) {
                     available.add(mount);
                 }
@@ -123,7 +133,7 @@ public class MountManager {
         return available;
     }
 
-    public Map<UUID, Mount> getActiveMounts() {
+    public Map<UUID, Horse> getActiveMounts() {
         return activeMounts;
     }
 
@@ -155,23 +165,23 @@ public class MountManager {
 
     public void showGUI(Player player) {
         String name = TextUtils.color(windowName);
-        List<Mount> playerMounts = getAvailableMounts(player);
+        List<Horse> playerMounts = getAvailableMounts(player);
         double rows = Math.ceil((double) playerMounts.size() / 9);
         if (rows == 0) {
             rows = 1;
         }
         Inventory inv = Bukkit.getServer().createInventory(null, (int)(9 * rows), name);
         int slot = 0;
-        for (Mount mount : playerMounts) {
+        for (Horse mount : playerMounts) {
             inv.setItem(slot, mount.getDisplayItem());
             slot += 1;
         }
         player.openInventory(inv);
     }
 
-    public void equipMount(Player player, Mount mount) {
+    public void equipMount(Player player, Horse mount) {
         player.sendMessage(TextUtils.color(prefix + mounted).replace("{mountname}", mount.getName()));
-        mount.spawn(player);
+        mount.setMountOwner(player);
         setMount(player, mount);
         mountCooldowns.add(player.getUniqueId());
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -180,5 +190,9 @@ public class MountManager {
                 mountCooldowns.remove(player.getUniqueId());
             }
         }, cooldownDelay);
+    }
+
+    public boolean isMount(Entity entity) {
+        return getMount(entity) != null;
     }
 }

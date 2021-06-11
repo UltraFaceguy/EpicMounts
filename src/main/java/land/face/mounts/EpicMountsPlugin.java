@@ -10,7 +10,7 @@ import io.pixeloutlaw.minecraft.spigot.config.MasterConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedSmartYamlConfiguration;
 import land.face.mounts.commands.MountsCommand;
-import land.face.mounts.data.Mount;
+import land.face.mounts.data.Horse;
 import land.face.mounts.listeners.*;
 import land.face.mounts.managers.MountManager;
 import org.bukkit.Bukkit;
@@ -43,7 +43,7 @@ public class EpicMountsPlugin extends JavaPlugin {
 
     File file = new File(getDataFolder().getPath() + "/mounts");
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    List<Mount> list = new ArrayList<>();
+    List<Horse> list = new ArrayList<>();
     if (!getDataFolder().exists()) {
       getDataFolder().mkdir();
     }
@@ -53,7 +53,7 @@ public class EpicMountsPlugin extends JavaPlugin {
         List<String> lore = new ArrayList<>();
         lore.add("Caca");
         lore.add("Poopoo");
-        Mount mount = new Mount("DefaultMount", "Default", Material.LEATHER_HORSE_ARMOR, lore, 20.0, 10.0, 20.0, null, "HORSE", "BROWN", "WHITE");
+        Horse mount = new Horse("DefaultMount", "Default", Material.LEATHER_HORSE_ARMOR, lore, 20.0, 10.0, 20.0, null, "HORSE", "BROWN", "WHITE");
         list.add(mount);
         try (FileWriter writer = new FileWriter(getDataFolder().getPath() + "/mounts" + "/DefaultMount.json")) {
           gson.toJson(list, writer);
@@ -64,10 +64,10 @@ public class EpicMountsPlugin extends JavaPlugin {
     }
 
     Bukkit.getPluginManager().registerEvents(new DamageListener(mountManager), this);
-    Bukkit.getPluginManager().registerEvents(new DismountListener(mountManager), this);
     Bukkit.getPluginManager().registerEvents(new InventoryListener(mountManager), this);
     Bukkit.getPluginManager().registerEvents(new PlayerExitListener(mountManager), this);
     Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new ChunkUnloadListener(mountManager), this);
 
     MountsCommand mountsCommand = new MountsCommand(mountManager);
     this.getCommand("mounts").setExecutor(mountsCommand);
@@ -78,7 +78,7 @@ public class EpicMountsPlugin extends JavaPlugin {
   @Override
   public void onDisable() {
     HandlerList.unregisterAll(this);
-    for (Mount mount : getMountManager().getActiveMounts().values()) {
+    for (Horse mount : getMountManager().getActiveMounts().values()) {
       mount.getMount().remove();
     }
     for (Player player : Bukkit.getOnlinePlayers()) {

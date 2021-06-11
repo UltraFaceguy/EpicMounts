@@ -1,7 +1,5 @@
 version: 0.0.3
 
-Cooldown: 0
-
 language:
   windowname: "&0&lMounts!"
   prefix: "&7[Mounts] "
@@ -9,6 +7,7 @@ language:
   invalid_location: "&cCould not summon mount at this location, move to a more open location!"
   no_mounts: "&cYou do not have any available mounts!"
   cool_down: "&cCooling Down!"
+  despawn: "&oYour mount wandered away..."
 
 Paths:
   Speed: 0.5
