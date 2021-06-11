@@ -31,6 +31,7 @@ public class EpicMountsPlugin extends JavaPlugin {
   @Override
   public void onEnable() {
     epicMountsPlugin = this;
+    commandManager = new BukkitCommandManager(this);
 
     List<VersionedSmartYamlConfiguration> configurations = new ArrayList<>();
     configurations.add(configYAML = defaultSettingsLoad("config.yml"));
@@ -51,7 +52,6 @@ public class EpicMountsPlugin extends JavaPlugin {
     Bukkit.getPluginManager().registerEvents(new ChunkUnloadListener(mountManager), this);
     Bukkit.getPluginManager().registerEvents(new EpicDismountListener(),this);
 
-    commandManager = new BukkitCommandManager(this);
     commandManager.registerCommand(new MountsCommand(mountManager));
 
     Bukkit.getServer().getLogger().info("EpicMounts has been enabled");

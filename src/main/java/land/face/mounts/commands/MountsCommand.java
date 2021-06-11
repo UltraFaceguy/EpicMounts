@@ -43,7 +43,7 @@ public class MountsCommand extends BaseCommand {
         manager.loadMounts();
     }
 
-    @CommandCompletion("mount-ids")
+    @CommandCompletion("@mount-ids")
     @Subcommand("test")
     public void onTest(Player player, String mountID) {
         Mount m = manager.getMount(mountID);
