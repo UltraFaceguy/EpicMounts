@@ -25,7 +25,7 @@ public class InventoryListener implements Listener {
                 Horse mount = mountManager.getAvailableMounts(player).get(event.getSlot());
                 if (mount != null) {
                     player.closeInventory();
-                    mount.setMountOwner(player);
+                    //mount.setMountOwner(player);
                     mountManager.equipMount(player, mount);
                 }
             } catch (IndexOutOfBoundsException error) {

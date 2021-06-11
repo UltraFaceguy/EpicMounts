@@ -158,7 +158,7 @@ public class MountManager {
     }
 
     public void removeMount(Entity entity) {
-        removeMount(getMount(entity).getMountOwner());
+        //removeMount(getMount(entity).getMountOwner());
     }
 
     public void removeMount(Player player) {
@@ -239,8 +239,8 @@ public class MountManager {
     }
 
     public void equipMount(Player player, Horse mount) {
-        player.sendMessage(TextUtils.color(prefix + mounted).replace("{mountname}", mount.getName()));
-        mount.setMountOwner(player);
+        player.sendMessage(TextUtils.color(prefix + mounted).replace("{mountname}", "mount.getName()"));
+        //mount.setMountOwner(player);
         setMount(player, mount);
         mountCooldowns.add(player.getUniqueId());
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {

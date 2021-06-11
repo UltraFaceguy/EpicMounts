@@ -25,7 +25,7 @@ public class ChunkUnloadListener implements Listener {
         List<Entity> entities = Arrays.asList(chunk.getEntities());
         for (Entity entity : entities) {
             if (manager.isMount(entity)) {
-                manager.getMount(entity).getMountOwner().sendMessage(TextUtils.color(manager.getPrefix() + manager.getDespawnMessage()));
+                //manager.getMount(entity).getMountOwner().sendMessage(TextUtils.color(manager.getPrefix() + manager.getDespawnMessage()));
                 manager.removeMount(entity);
             }
         }

@@ -50,10 +50,10 @@ public class PlayerMoveListener implements Listener {
         LivingEntity entity = (LivingEntity) player.getVehicle();
         Location location = entity.getLocation().add(0, -1, 0);
         if (pathBlocks.contains(location.getBlock().getType())) {
-            entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(pathSpeed * (manager.getMount(player).getSpeed() / 100));
+            //entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(pathSpeed * (manager.getMount(player).getSpeed() / 100));
         }
         else {
-            entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.2 * (manager.getMount(player).getSpeed() / 100));
+            //entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0.2 * (manager.getMount(player).getSpeed() / 100));
         }
     }
 }

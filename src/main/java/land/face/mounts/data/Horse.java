@@ -13,7 +13,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 import java.util.UUID;
 
-@Data
 public class Horse extends Mount {
 
     private transient ItemStack icon;
@@ -55,7 +54,7 @@ public class Horse extends Mount {
         icon.setItemMeta(meta);
     }
 
-    @Override
+    /*
     public void spawnMount() {
         spawnMount(mountOwner);
     }
@@ -89,6 +88,7 @@ public class Horse extends Mount {
 
         mount.addPassenger(player);
     }
+     */
 
     public void setColor(String color) {
         try {
