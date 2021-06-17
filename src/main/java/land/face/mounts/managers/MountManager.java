@@ -1,10 +1,7 @@
 package land.face.mounts.managers;
 
 import com.tealcube.minecraft.bukkit.TextUtils;
-import com.tealcube.minecraft.bukkit.shade.google.gson.GsonBuilder;
-import com.tealcube.minecraft.bukkit.shade.google.gson.reflect.TypeToken;
 import land.face.mounts.EpicMountsPlugin;
-import land.face.mounts.data.Horse;
 import land.face.mounts.data.Mount;
 import land.face.mounts.utils.GsonUtils;
 import lombok.Data;
@@ -12,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -29,8 +25,6 @@ public class MountManager {
     private final String path;
 
     private final Map<String, Mount> loadedMounts = new HashMap<>();
-
-    private       HashMap<UUID, Horse> activeMounts = new HashMap<>();
     private       ArrayList<UUID> mountCooldowns = new ArrayList<>();
 
     private final String windowName;
@@ -107,66 +101,6 @@ public class MountManager {
         return loadedMounts.get(mountID);
     }
 
-    public void setMount(Player player, Horse mount) {
-        activeMounts.put(player.getUniqueId(), mount);
-    }
-
-    public boolean hasMount(Player player) {
-        return activeMounts.containsKey(player.getUniqueId());
-    }
-
-    public Horse getMount(Player player) {
-        return activeMounts.get(player.getUniqueId());
-    }
-
-    public Horse getMount(Entity entity) {
-        for (UUID uuid : activeMounts.keySet()) {
-            if (activeMounts.get(uuid).getMount() == entity) {
-                return activeMounts.get(uuid);
-            }
-        }
-        return null;
-    }
-
-    public void removeMount(Entity entity) {
-        //removeMount(getMount(entity).getMountOwner());
-    }
-
-    public void removeMount(Player player) {
-        activeMounts.get(player.getUniqueId()).getMount().remove();
-        activeMounts.remove(player.getUniqueId());
-    }
-
-    public List getAllMounts() {
-        List<Horse> list = null;
-        try {
-            list = new GsonBuilder().setPrettyPrinting().create().fromJson(new FileReader(plugin.getDataFolder().getPath() + "/mounts" + "/DefaultMount.json"), new TypeToken<List<Horse>>() {}.getType());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    public List<Horse> getAvailableMounts(Player player) {
-        ArrayList<Horse> available = new ArrayList<>();
-        try {
-            List<Horse> list;
-            list = new GsonBuilder().setPrettyPrinting().create().fromJson(new FileReader(plugin.getDataFolder().getPath() + "/mounts" + "/DefaultMount.json"), new TypeToken<List<Horse>>() {}.getType());
-            for (Horse mount : list) {
-                if (player.hasPermission("EpicMounts." + mount.getId())) {
-                    available.add(mount);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return available;
-    }
-
-    public Map<UUID, Horse> getActiveMounts() {
-        return activeMounts;
-    }
-
     public boolean hasCooldown(Player player) {
         return mountCooldowns.contains(player.getUniqueId());
     }
@@ -195,29 +129,23 @@ public class MountManager {
 
     public void showGUI(Player player) {
         String name = TextUtils.color(windowName);
-        List<Horse> playerMounts = getAvailableMounts(player);
+        List<Mount> playerMounts = getAvailableMounts(player);
         double rows = Math.ceil((double) playerMounts.size() / 9);
         if (rows == 0) {
             rows = 1;
         }
         Inventory inv = Bukkit.getServer().createInventory(null, (int)(9 * rows), name);
         int slot = 0;
-        for (Horse mount : playerMounts) {
+        for (Mount mount : playerMounts) {
             inv.setItem(slot, mount.getIcon());
             slot += 1;
         }
         player.openInventory(inv);
     }
 
-    public void equipMount(Player player, Horse mount) {
+    public void equipMount(Player player, Mount mount) {
         player.sendMessage(TextUtils.color(prefix + mountedMessage).replace("{mountname}", "mount.getName()"));
-        //mount.setMountOwner(player);
-        setMount(player, mount);
         mountCooldowns.add(player.getUniqueId());
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> mountCooldowns.remove(player.getUniqueId()), cooldownDelay);
-    }
-
-    public boolean isMount(Entity entity) {
-        return getMount(entity) != null;
     }
 }
