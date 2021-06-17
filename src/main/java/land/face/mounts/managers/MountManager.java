@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -100,6 +101,24 @@ public class MountManager {
 
     public Mount getMount(String mountID) {
         return loadedMounts.get(mountID);
+    }
+
+    public boolean hasMount(Player player) {
+        if (player.getVehicle() == null) return false;
+        return isMount(player.getVehicle());
+    }
+
+    public boolean isMount(Entity entity) {
+        return entity.hasMetadata(METADATA_KEY);
+    }
+
+    public void removeMount(Player player) {
+        removeMount(player.getVehicle());
+    }
+    public void removeMount(Entity entity) {
+        if (entity == null || !entity.hasMetadata(METADATA_KEY)) return;
+        entity.remove();
+        //TODO: remove from NPC registry
     }
 
     public boolean hasCooldown(Player player) {
