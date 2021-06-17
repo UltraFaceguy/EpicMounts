@@ -16,15 +16,11 @@ public class PlayerExitListener implements Listener {
 
     @EventHandler
     public void OnPlayerQuit(PlayerQuitEvent event) {
-        if (mountManager.hasMount(event.getPlayer())) {
-            mountManager.removeMount(event.getPlayer());
-        }
+        mountManager.removeMount(event.getPlayer());
     }
 
     @EventHandler
     public void OnPlayerKicked(PlayerKickEvent event) {
-        if (mountManager.hasMount(event.getPlayer())) {
-            mountManager.removeMount(event.getPlayer());
-        }
+        mountManager.removeMount(event.getPlayer());
     }
 }

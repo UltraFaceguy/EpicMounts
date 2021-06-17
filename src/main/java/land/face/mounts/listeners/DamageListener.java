@@ -1,7 +1,6 @@
 package land.face.mounts.listeners;
 
 import land.face.mounts.managers.MountManager;
-import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,10 +12,10 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class DamageListener implements Listener {
 
-    private MountManager manager;
+    private final MountManager mountManager;
 
     public DamageListener(MountManager manager) {
-        this.manager = manager;
+        this.mountManager = manager;
     }
 
     @EventHandler
@@ -24,38 +23,23 @@ public class DamageListener implements Listener {
         if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
             return;
         }
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            if (manager.hasMount(player)) {
-                manager.removeMount(player);
-            }
-        }
-        if (event.getEntity() instanceof AbstractHorse) {
-            if (manager.getMount(event.getEntity()) != null) {
-                manager.getMount(event.getEntity()).remove();
-            }
-        }
+        mountManager.removeMount(event.getEntity());
     }
 
     @EventHandler
     public void OnEntityDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
-            Player player = (Player) event.getDamager();
-            if (manager.hasMount(player)) {
-                manager.removeMount(player);
-            }
+            mountManager.removeMount((Player) event.getDamager());
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void OnHorseDeath(EntityDeathEvent event) {
-        if (event.getEntity() instanceof AbstractHorse) {
-            Entity entity = event.getEntity();
-            if (manager.getMount(entity) != null) {
-                event.setDroppedExp(0);
-                event.getDrops().clear();
-                manager.getMount(entity).remove();
-            }
+        Entity entity = event.getEntity();
+        if (mountManager.isMount(entity)) {
+            event.setDroppedExp(0);
+            event.getDrops().clear();
+            mountManager.removeMount(entity);
         }
     }
 }
