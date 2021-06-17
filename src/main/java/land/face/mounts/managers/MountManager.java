@@ -27,6 +27,7 @@ public class MountManager {
     private final Map<String, Mount> loadedMounts = new HashMap<>();
     private       ArrayList<UUID> mountCooldowns = new ArrayList<>();
 
+    private final String METADATA_KEY = "EpicMounts";
     private final String windowName;
     private final Long cooldownDelay;
     private final String prefix;

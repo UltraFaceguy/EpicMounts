@@ -119,7 +119,9 @@ public class Mount {
 
         entity.addPassenger(player);
         entity.setCustomNameVisible(false);
-        entity.setMetadata("EpicMount", new FixedMetadataValue(EpicMountsPlugin.getInstance(), true));
+        entity.setMetadata(
+                EpicMountsPlugin.getInstance().getMountManager().getMETADATA_KEY(),
+                new FixedMetadataValue(EpicMountsPlugin.getInstance(), true));
 
         //Forced Attribute
         npc.getOrAddTrait(MountTrait.class);
