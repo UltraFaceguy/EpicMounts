@@ -214,12 +214,7 @@ public class MountManager {
         //mount.setMountOwner(player);
         setMount(player, mount);
         mountCooldowns.add(player.getUniqueId());
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            @Override
-            public void run() {
-                mountCooldowns.remove(player.getUniqueId());
-            }
-        }, cooldownDelay);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> mountCooldowns.remove(player.getUniqueId()), cooldownDelay);
     }
 
     public boolean isMount(Entity entity) {
