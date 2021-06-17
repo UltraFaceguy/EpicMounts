@@ -149,17 +149,20 @@ public class MountManager {
 
     public void showGUI(Player player) {
         String name = TextUtils.color(windowName);
-        List<Mount> playerMounts = getAvailableMounts(player);
-        double rows = Math.ceil((double) playerMounts.size() / 9);
+        //List<Mount> playerMounts = getAvailableMounts(player);
+        //double rows = Math.ceil((double) playerMounts.size() / 9);
+        double rows = 1;
         if (rows == 0) {
             rows = 1;
         }
         Inventory inv = Bukkit.getServer().createInventory(null, (int)(9 * rows), name);
         int slot = 0;
+        /*
         for (Mount mount : playerMounts) {
             inv.setItem(slot, mount.getIcon());
             slot += 1;
         }
+         */
         player.openInventory(inv);
     }
 

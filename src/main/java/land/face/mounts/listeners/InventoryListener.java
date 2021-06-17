@@ -1,7 +1,6 @@
 package land.face.mounts.listeners;
 
 import com.tealcube.minecraft.bukkit.TextUtils;
-import land.face.mounts.data.Horse;
 import land.face.mounts.managers.MountManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,12 +21,14 @@ public class InventoryListener implements Listener {
         if (event.getView().getTitle().equals(TextUtils.color(mountManager.getWindowName()))) {
             try {
                 Player player = (Player) event.getWhoClicked();
+                /*
                 Horse mount = mountManager.getAvailableMounts(player).get(event.getSlot());
                 if (mount != null) {
                     player.closeInventory();
                     //mount.setMountOwner(player);
                     mountManager.equipMount(player, mount);
                 }
+                 */
             } catch (IndexOutOfBoundsException error) {
                 //pass
             }

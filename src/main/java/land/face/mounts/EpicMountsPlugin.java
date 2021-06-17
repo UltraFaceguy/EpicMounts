@@ -10,7 +10,6 @@ import io.pixeloutlaw.minecraft.spigot.config.MasterConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedSmartYamlConfiguration;
 import land.face.mounts.commands.MountsCommand;
-import land.face.mounts.data.Horse;
 import land.face.mounts.listeners.*;
 import land.face.mounts.managers.MountManager;
 import org.bukkit.Bukkit;
@@ -60,9 +59,11 @@ public class EpicMountsPlugin extends JavaPlugin {
   @Override
   public void onDisable() {
     HandlerList.unregisterAll(this);
+    /* TODO
     for (Horse mount : getMountManager().getActiveMounts().values()) {
       mount.getMount().remove();
     }
+     */
     for (Player player : Bukkit.getOnlinePlayers()) {
       if (player.getOpenInventory().getTitle().equals(mountManager.getWindowName())) {
         player.closeInventory();
