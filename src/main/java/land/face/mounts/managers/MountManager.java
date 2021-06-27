@@ -6,6 +6,7 @@ import land.face.mounts.data.Mount;
 import land.face.mounts.utils.GsonUtils;
 import lombok.Data;
 import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.event.DespawnReason;
 import net.citizensnpcs.api.npc.MemoryNPCDataStore;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.npc.NPCRegistry;
@@ -130,6 +131,11 @@ public class MountManager {
         NPC npc = NPCRegistry.getNPC(entity);
         npc.destroy();
         NPCRegistry.deregister(npc);
+    }
+
+    public void removeAllMounts() {
+        NPCRegistry.despawnNPCs(DespawnReason.PLUGIN);
+        NPCRegistry.deregisterAll();
     }
 
     public void applyMountMetadata(Entity entity) {
