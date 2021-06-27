@@ -1,9 +1,9 @@
 package land.face.mounts.data;
 
 import land.face.mounts.EpicMountsPlugin;
+import land.face.mounts.managers.MountManager;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.SpawnReason;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.*;
@@ -13,10 +13,8 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
-import org.bukkit.entity.Horse;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Objects;
 
@@ -113,15 +111,14 @@ public class Mount {
     private boolean isTamed;
 
     public void spawnMount(Player player) {
-        NPC npc = CitizensAPI.getNPCRegistry().createNPC(entityType, id);
+        MountManager manager = EpicMountsPlugin.getInstance().getMountManager();
+        NPC npc = manager.getNPCRegistry().createNPC(entityType, id);
         npc.spawn(player.getLocation(), SpawnReason.PLUGIN);
         Entity entity = npc.getEntity();
 
         entity.addPassenger(player);
         entity.setCustomNameVisible(false);
-        entity.setMetadata(
-                EpicMountsPlugin.getInstance().getMountManager().getMETADATA_KEY(),
-                new FixedMetadataValue(EpicMountsPlugin.getInstance(), true));
+        manager.applyMountMetadata(entity);
 
         //Forced Attribute
         npc.getOrAddTrait(MountTrait.class);
@@ -160,8 +157,7 @@ public class Mount {
                 catTrait.setCollarColor(collarColor);
                 catTrait.setLyingDown(isLaying);
                 catTrait.setSitting(isSitting);
-                if (catType == null) catTrait.setType(Cat.Type.values()[0]);
-                else catTrait.setType(catType);
+                catTrait.setType(Objects.requireNonNullElse(catType, Cat.Type.values()[0]));
                 break;
             case ENDERMAN:
                 assert entity instanceof Enderman;
@@ -174,8 +170,7 @@ public class Mount {
                 foxTrait.setSitting(isSitting);
                 foxTrait.setCrouching(isCrouching);
                 foxTrait.setSleeping(isSleeping);
-                if (foxType == null) foxTrait.setType(Fox.Type.values()[0]);
-                else foxTrait.setType(foxType);
+                foxTrait.setType(Objects.requireNonNullElse(foxType, Fox.Type.values()[0]));
                 break;
             case SKELETON_HORSE:
             case ZOMBIE_HORSE:
@@ -193,8 +188,7 @@ public class Mount {
                 break;
             case MUSHROOM_COW:
                 MushroomCowTrait mushroomCowTrait = npc.getOrAddTrait(MushroomCowTrait.class);
-                if (mooshroomType == null) mushroomCowTrait.setVariant(MushroomCow.Variant.RED);
-                else mushroomCowTrait.setVariant(mooshroomType);
+                mushroomCowTrait.setVariant(Objects.requireNonNullElse(mooshroomType, MushroomCow.Variant.RED));
                 break;
             case PANDA:
                 PandaTrait pandaTrait = npc.getOrAddTrait(PandaTrait.class);
@@ -225,20 +219,17 @@ public class Mount {
             case RABBIT:
                 assert entity instanceof Rabbit;
                 Rabbit rabbit = ((Rabbit) entity);
-                if (rabbitType == null) rabbit.setRabbitType(Rabbit.Type.values()[0]);
-                else rabbit.setRabbitType(rabbitType);
+                rabbit.setRabbitType(Objects.requireNonNullElse(rabbitType, Rabbit.Type.values()[0]));
                 break;
             case SHEEP:
                 SheepTrait sheepTrait = npc.getOrAddTrait(SheepTrait.class);
                 sheepTrait.setSheared(isSheared);
-                if (color == null) sheepTrait.setColor(DyeColor.WHITE);
-                else sheepTrait.setColor(color);
+                sheepTrait.setColor(Objects.requireNonNullElse(color, DyeColor.WHITE));
                 break;
             case SHULKER:
                 ShulkerTrait shulkerTrait = npc.getOrAddTrait(ShulkerTrait.class);
                 shulkerTrait.setPeek(shulkerPeek);
-                if (color == null) shulkerTrait.setColor(DyeColor.WHITE);
-                else shulkerTrait.setColor(color);
+                shulkerTrait.setColor(Objects.requireNonNullElse(color, DyeColor.WHITE));
                 break;
             case SNOWMAN:
                 SnowmanTrait snowmanTrait = npc.getOrAddTrait(SnowmanTrait.class);
@@ -246,12 +237,9 @@ public class Mount {
                 break;
             case TROPICAL_FISH:
                 TropicalFishTrait tropicalFishTrait = npc.getOrAddTrait(TropicalFishTrait.class);
-                if (bodyColor == null) tropicalFishTrait.setBodyColor(DyeColor.WHITE);
-                else tropicalFishTrait.setBodyColor(bodyColor);
-                if (patternColor == null) tropicalFishTrait.setPatternColor(DyeColor.WHITE);
-                else tropicalFishTrait.setPatternColor(patternColor);
-                if (tropicalFishPattern == null) tropicalFishTrait.setPattern(TropicalFish.Pattern.values()[0]);
-                else tropicalFishTrait.setPattern(tropicalFishPattern);
+                tropicalFishTrait.setBodyColor(Objects.requireNonNullElse(bodyColor, DyeColor.WHITE));
+                tropicalFishTrait.setPatternColor(Objects.requireNonNullElse(patternColor, DyeColor.WHITE));
+                tropicalFishTrait.setPattern(Objects.requireNonNullElse(tropicalFishPattern, TropicalFish.Pattern.values()[0]));
                 break;
             case ZOMBIE_VILLAGER:
             case VILLAGER:
@@ -266,8 +254,7 @@ public class Mount {
                 wolfModifiers.setAngry(angry);
                 wolfModifiers.setSitting(isSitting);
                 wolfModifiers.setTamed(isTamed);
-                if (collarColor == null) wolfModifiers.setCollarColor(DyeColor.RED);
-                else wolfModifiers.setCollarColor(collarColor);
+                wolfModifiers.setCollarColor(Objects.requireNonNullElse(collarColor, DyeColor.RED));
                 break;
             case PHANTOM:
                 PhantomTrait phantomTrait = npc.getOrAddTrait(PhantomTrait.class);
