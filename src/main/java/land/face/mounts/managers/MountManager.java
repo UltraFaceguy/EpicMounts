@@ -7,6 +7,7 @@ import land.face.mounts.utils.GsonUtils;
 import lombok.Data;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.MemoryNPCDataStore;
+import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.npc.NPCRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -126,8 +127,9 @@ public class MountManager {
     }
     public void removeMount(Entity entity) {
         if (entity == null || !isMount(entity)) return;
-        entity.remove();
-        //TODO: remove from NPC registry
+        NPC npc = NPCRegistry.getNPC(entity);
+        npc.destroy();
+        NPCRegistry.deregister(npc);
     }
 
     public void applyMountMetadata(Entity entity) {
