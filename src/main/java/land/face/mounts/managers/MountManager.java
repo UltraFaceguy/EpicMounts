@@ -17,7 +17,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Data
 public class MountManager {
@@ -116,7 +119,7 @@ public class MountManager {
         removeMount(player.getVehicle());
     }
     public void removeMount(Entity entity) {
-        if (entity == null || !entity.hasMetadata(METADATA_KEY)) return;
+        if (entity == null || !isMount(entity)) return;
         entity.remove();
         //TODO: remove from NPC registry
     }
