@@ -5,6 +5,9 @@ import land.face.mounts.EpicMountsPlugin;
 import land.face.mounts.data.Mount;
 import land.face.mounts.utils.GsonUtils;
 import lombok.Data;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.MemoryNPCDataStore;
+import net.citizensnpcs.api.npc.NPCRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,6 +30,7 @@ import java.util.UUID;
 public class MountManager {
 
     private final EpicMountsPlugin plugin;
+    private final NPCRegistry NPCRegistry;
     private final String path;
 
     private final Map<String, Mount> loadedMounts = new HashMap<>();
@@ -53,6 +57,7 @@ public class MountManager {
         noMountsMessage = plugin.getSettings().getString("config.language.no_mounts", "&cYou do not have any available mounts!");
         cooldownMessage = plugin.getSettings().getString("config.language.cooldown", "&cCooling Down!");
         despawnMessage = plugin.getSettings().getString("config.language.despawn", "&oYour mount wandered away...");
+        NPCRegistry = CitizensAPI.createAnonymousNPCRegistry(new MemoryNPCDataStore());
     }
 
     public void loadMounts() {
