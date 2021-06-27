@@ -12,6 +12,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -122,6 +123,10 @@ public class MountManager {
         if (entity == null || !isMount(entity)) return;
         entity.remove();
         //TODO: remove from NPC registry
+    }
+
+    public void applyMountMetadata(Entity entity) {
+        entity.setMetadata(METADATA_KEY,new FixedMetadataValue(plugin, true));
     }
 
     public boolean hasCooldown(Player player) {
