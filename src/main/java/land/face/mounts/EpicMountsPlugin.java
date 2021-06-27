@@ -1,10 +1,5 @@
 package land.face.mounts;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.tealcube.minecraft.bukkit.shade.acf.BukkitCommandManager;
 import io.pixeloutlaw.minecraft.spigot.config.MasterConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedConfiguration;
@@ -16,6 +11,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class EpicMountsPlugin extends JavaPlugin {
 
@@ -59,17 +59,13 @@ public class EpicMountsPlugin extends JavaPlugin {
   @Override
   public void onDisable() {
     HandlerList.unregisterAll(this);
-    /* TODO
-    for (Horse mount : getMountManager().getActiveMounts().values()) {
-      mount.getMount().remove();
-    }
-     */
     for (Player player : Bukkit.getOnlinePlayers()) {
       if (player.getOpenInventory().getTitle().equals(mountManager.getWindowName())) {
         player.closeInventory();
       }
     }
     mountManager.saveMounts();
+    mountManager.removeAllMounts();
     Bukkit.getServer().getLogger().info("EpicMounts has been disabled");
   }
 
