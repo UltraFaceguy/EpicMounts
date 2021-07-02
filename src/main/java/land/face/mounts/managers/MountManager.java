@@ -123,6 +123,10 @@ public class MountManager {
         return entity.hasMetadata(METADATA_KEY);
     }
 
+    public void removeIfMount(Entity entity) {
+        if (isMount(entity)) removeMount(entity);
+    }
+
     public void removeMount(Player player) {
         removeMount(player.getVehicle());
     }
@@ -144,6 +148,10 @@ public class MountManager {
 
     public boolean hasCooldown(Player player) {
         return mountCooldowns.contains(player.getUniqueId());
+    }
+
+    public NPC getAsNPC(Entity entity) {
+        return NPCRegistry.getNPC(entity);
     }
 
     public boolean canMount(Player player) {
