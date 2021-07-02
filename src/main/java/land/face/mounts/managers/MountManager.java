@@ -3,6 +3,7 @@ package land.face.mounts.managers;
 import com.tealcube.minecraft.bukkit.TextUtils;
 import land.face.mounts.EpicMountsPlugin;
 import land.face.mounts.data.Mount;
+import land.face.mounts.menu.MountSelectorMenu;
 import land.face.mounts.utils.GsonUtils;
 import lombok.Data;
 import net.citizensnpcs.api.CitizensAPI;
@@ -16,7 +17,6 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.io.*;
@@ -177,22 +177,8 @@ public class MountManager {
     }
 
     public void showGUI(Player player) {
-        String name = TextUtils.color(windowName);
         //List<Mount> playerMounts = getAvailableMounts(player);
-        //double rows = Math.ceil((double) playerMounts.size() / 9);
-        double rows = 1;
-        if (rows == 0) {
-            rows = 1;
-        }
-        Inventory inv = Bukkit.getServer().createInventory(null, (int)(9 * rows), name);
-        int slot = 0;
-        /*
-        for (Mount mount : playerMounts) {
-            inv.setItem(slot, mount.getIcon());
-            slot += 1;
-        }
-         */
-        player.openInventory(inv);
+        new MountSelectorMenu(loadedMounts.values()).open(player);
     }
 
     public void equipMount(Player player, Mount mount) {

@@ -32,7 +32,7 @@ public class InventoryListener implements Listener {
             } catch (IndexOutOfBoundsException error) {
                 //pass
             }
-            event.setCancelled(true);
+            //event.setCancelled(true);
         }
     }
 
