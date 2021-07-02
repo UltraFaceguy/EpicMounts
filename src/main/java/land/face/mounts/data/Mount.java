@@ -21,7 +21,7 @@ import java.util.Objects;
 @Data @AllArgsConstructor
 public class Mount {
 
-    private String id;
+    private transient String id;
     private EntityType entityType;
     private boolean flyable;
     private boolean hasGravity;
