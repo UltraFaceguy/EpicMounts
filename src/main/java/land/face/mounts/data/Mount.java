@@ -120,7 +120,7 @@ public class Mount {
 
         //Forced Attributes
         entity.setCustomNameVisible(false);
-        manager.applyMountMetadata(entity);
+        manager.applyMountMetadata(entity, id);
         npc.getOrAddTrait(MountTrait.class);
         npc.getOrAddTrait(Controllable.class).setEnabled(true);
 
@@ -264,6 +264,10 @@ public class Mount {
             case MAGMA_CUBE:
                 SlimeSize slimeSizeTrait = npc.getOrAddTrait(SlimeSize.class);
                 if (size > 0) slimeSizeTrait.setSize(size);
+                break;
+            case STRIDER:
+                assert entity instanceof Strider;
+                ((Strider) entity).setShivering(shouldShiver);
                 break;
         }
     }

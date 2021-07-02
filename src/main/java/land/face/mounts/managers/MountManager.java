@@ -18,6 +18,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -110,6 +111,9 @@ public class MountManager {
         return getMount(mountID) != null;
     }
 
+    public Mount getMount(Entity entity) {
+        return getMount(getMountID(entity));
+    }
     public Mount getMount(String mountID) {
         return loadedMounts.get(mountID);
     }
@@ -143,11 +147,23 @@ public class MountManager {
     }
 
     public void applyMountMetadata(Entity entity) {
-        entity.setMetadata(METADATA_KEY,new FixedMetadataValue(plugin, true));
+        applyMountMetadata(entity, null);
+    }
+    public void applyMountMetadata(Entity entity, String ID) {
+        entity.setMetadata(METADATA_KEY,new FixedMetadataValue(plugin, ID));
     }
 
     public boolean hasCooldown(Player player) {
         return mountCooldowns.contains(player.getUniqueId());
+    }
+
+    public String getMountID(Entity entity) {
+        if (!isMount(entity)) return null;
+        for (MetadataValue metadata : entity.getMetadata(METADATA_KEY)) {
+            if (metadata.getOwningPlugin() != plugin) break;
+            return metadata.asString();
+        }
+        return null;
     }
 
     public NPC getAsNPC(Entity entity) {
