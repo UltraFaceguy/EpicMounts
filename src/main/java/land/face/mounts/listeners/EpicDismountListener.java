@@ -15,6 +15,6 @@ public class EpicDismountListener implements Listener {
 
     @EventHandler
     public void onEpicDismount(EntityDismountEvent event) {
-        mountManager.removeIfMount(event.getEntity());
+        mountManager.removeIfMount(event.getDismounted());
     }
 }
