@@ -117,10 +117,10 @@ public class Mount {
         Entity entity = npc.getEntity();
 
         entity.addPassenger(player);
+
+        //Forced Attributes
         entity.setCustomNameVisible(false);
         manager.applyMountMetadata(entity);
-
-        //Forced Attribute
         npc.getOrAddTrait(MountTrait.class);
         npc.getOrAddTrait(Controllable.class).setEnabled(true);
 
