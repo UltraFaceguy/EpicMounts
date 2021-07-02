@@ -60,8 +60,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot-api</artifactId>
+      <groupId>com.destroystokyo.paper</groupId>
+      <artifactId>paper-api</artifactId>
     </dependency>
     <dependency>
       <groupId>io.pixeloutlaw</groupId>
