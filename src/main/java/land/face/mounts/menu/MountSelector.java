@@ -12,7 +12,7 @@ public class MountSelector extends MenuItem {
     private final Mount mount;
 
     public MountSelector(Mount mount) {
-        super(mount.getId(), new ItemStack(Material.SADDLE), "uhh", "yeah", "hard coded this");
+        super(mount.getName(), new ItemStack(Material.SADDLE), mount.getLore());
         this.mount = mount;
     }
 

@@ -25,6 +25,9 @@ public class Mount {
 
     private String permission;
 
+    private String name;
+    private String[] lore;
+
     private EntityType entityType;
     private boolean flyable;
     private boolean hasGravity;
