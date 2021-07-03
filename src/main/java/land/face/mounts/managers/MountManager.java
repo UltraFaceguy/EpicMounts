@@ -24,10 +24,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 public class MountManager {
@@ -194,9 +192,15 @@ public class MountManager {
         return false;
     }
 
+    public List<Mount> getAvailableMounts(Player player) {
+        return loadedMounts.values()
+                .stream()
+                .filter(mount -> player.hasPermission(mount.getPermission()))
+                .collect(Collectors.toList());
+    }
+
     public void showGUI(Player player) {
-        //List<Mount> playerMounts = getAvailableMounts(player);
-        new MountSelectorMenu(loadedMounts.values()).open(player);
+        new MountSelectorMenu(getAvailableMounts(player)).open(player);
     }
 
     public void equipMount(Player player, Mount mount) {

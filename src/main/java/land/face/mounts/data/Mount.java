@@ -22,6 +22,9 @@ import java.util.Objects;
 public class Mount {
 
     private transient String id;
+
+    private String permission;
+
     private EntityType entityType;
     private boolean flyable;
     private boolean hasGravity;
