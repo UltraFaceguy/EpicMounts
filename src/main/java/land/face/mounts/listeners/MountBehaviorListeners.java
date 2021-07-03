@@ -19,6 +19,9 @@ public class MountBehaviorListeners implements Listener {
         Strider strider = event.getEntity();
         if (!mountManager.isMount(strider)) return;
         boolean shouldShiver = mountManager.getMount(strider).isShouldShiver();
-        if (shouldShiver != strider.isShivering()) strider.setShivering(shouldShiver);
+        if (shouldShiver != strider.isShivering()) {
+            strider.setShivering(shouldShiver);
+            //event.setCancelled(true);
+        }
     }
 }
