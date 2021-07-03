@@ -158,6 +158,11 @@ public class MountManager {
         entity.setMetadata(METADATA_KEY,new FixedMetadataValue(plugin, ID));
     }
 
+    public void applyCooldown(Player player) {
+        mountCooldowns.add(player.getUniqueId());
+        Bukkit.getScheduler().runTaskLater(plugin, () -> mountCooldowns.remove(player.getUniqueId()), cooldownDelay);
+    }
+
     public boolean hasCooldown(Player player) {
         return mountCooldowns.contains(player.getUniqueId());
     }

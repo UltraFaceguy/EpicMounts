@@ -1,5 +1,6 @@
 package land.face.mounts.menu;
 
+import land.face.mounts.EpicMountsPlugin;
 import land.face.mounts.data.Mount;
 import ninja.amp.ampmenus.events.ItemClickEvent;
 import ninja.amp.ampmenus.items.MenuItem;
@@ -19,5 +20,6 @@ public class MountSelector extends MenuItem {
     public void onItemClick(ItemClickEvent event) {
         event.setWillClose(true);
         mount.spawnMount(event.getPlayer());
+        EpicMountsPlugin.getInstance().getMountManager().applyCooldown(event.getPlayer());
     }
 }
