@@ -122,8 +122,6 @@ public class Mount {
         npc.spawn(player.getLocation(), SpawnReason.PLUGIN);
         Entity entity = npc.getEntity();
 
-        entity.addPassenger(player);
-
         //Forced Attributes
         entity.setCustomNameVisible(false);
         manager.applyMountMetadata(entity, id);
@@ -184,10 +182,11 @@ public class Mount {
             case HORSE:
                 HorseModifiers horseModifiers = npc.getOrAddTrait(HorseModifiers.class);
                 horseModifiers.setCarryingChest(isCarryingChest);
-                horseModifiers.setColor(horseColor);
-                horseModifiers.setStyle(horseStyle);
+                horseModifiers.setColor(Objects.requireNonNullElse(horseColor, Horse.Color.values()[0]));
+                horseModifiers.setStyle(Objects.requireNonNullElse(horseStyle,Horse.Style.values()[0]));
                 if (hasSaddle) horseModifiers.setSaddle(new ItemStack(Material.SADDLE));
                 break;
+            case TRADER_LLAMA:
             case LLAMA:
                 LlamaTrait llamaTrait = npc.getOrAddTrait(LlamaTrait.class);
                 llamaTrait.setColor(llamaColor);
@@ -277,5 +276,6 @@ public class Mount {
                 ((Strider) entity).setSaddle(hasSaddle);
                 break;
         }
+        entity.addPassenger(player);
     }
 }
