@@ -18,10 +18,14 @@ public class PlayerMoveListener implements Listener {
 
   private final MountManager manager;
   private final ArrayList<Material> pathBlocks;
+  private final int speedLevel;
+  private final int speedDuration;
 
   public PlayerMoveListener(EpicMountsPlugin plugin) {
     this.manager = plugin.getMountManager();
     this.pathBlocks = new ArrayList<>();
+    speedLevel = plugin.getSettings().getInt("config.Paths.path-speed", 1);
+    speedDuration = plugin.getSettings().getInt("config.Paths.path-speed-duration", 10);
     for (String string : plugin.getSettings().getStringList("config.Paths.Blocks")) {
       try {
         pathBlocks.add(Material.getMaterial(string.toUpperCase()));
@@ -39,8 +43,8 @@ public class PlayerMoveListener implements Listener {
     }
     Location location = vehicle.getLocation().add(0, -1, 0);
     if (pathBlocks.contains(location.getBlock().getType())) {
-      ((LivingEntity) vehicle)
-          .addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5, 0, true, false));
+      ((LivingEntity) vehicle).addPotionEffect(
+          new PotionEffect(PotionEffectType.SPEED, speedDuration, speedLevel, true, false));
     }
   }
 }
