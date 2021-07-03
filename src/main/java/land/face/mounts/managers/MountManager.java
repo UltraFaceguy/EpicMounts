@@ -38,6 +38,7 @@ public class MountManager {
     private       ArrayList<UUID> mountCooldowns = new ArrayList<>();
 
     private final String METADATA_KEY = "EpicMounts";
+    private final String defaultPermission;
     private final String windowName;
     private final Long cooldownDelay;
     private final String prefix;
@@ -50,6 +51,7 @@ public class MountManager {
     public MountManager(EpicMountsPlugin plugin) {
         this.plugin = plugin;
         this.path = plugin.getDataFolder() + File.separator + "MountData";
+        defaultPermission = plugin.getSettings().getString("config.permission.default_mount", "EpicMount.DefaultMount");
         cooldownDelay = plugin.getSettings().getLong("config.Cooldown", 0);
         windowName = plugin.getSettings().getString("config.WindowName", "Epic Gamer Mounts!");
         prefix = plugin.getSettings().getString("config.language.prefix", "&7[Mounts] ");
@@ -84,6 +86,9 @@ public class MountManager {
             Mount mount = GsonUtils.getGson().fromJson(new FileReader(file), Mount.class);
             String id = file.getName().replace(".json", "");
             mount.setId(id);
+            if (mount.getPermission() == null || mount.getPermission().equalsIgnoreCase("")) {
+                mount.setPermission(defaultPermission);
+            }
             loadedMounts.put(id, mount);
         }
         catch (FileNotFoundException e) {

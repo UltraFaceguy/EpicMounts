@@ -9,6 +9,9 @@ language:
   cool_down: "&cCooling Down!"
   despawn: "&oYour mount wandered away..."
 
+permission:
+  default_mount: "EpicMount.DefaultMount"
+
 Paths:
   Speed: 0.5
   Blocks:
