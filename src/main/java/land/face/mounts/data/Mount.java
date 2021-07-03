@@ -203,7 +203,7 @@ public class Mount {
                 break;
             case PARROT:
                 ParrotTrait parrotTrait = npc.getOrAddTrait(ParrotTrait.class);
-                parrotTrait.setVariant(parrotVariant);
+                parrotTrait.setVariant(Objects.requireNonNullElse(parrotVariant, Parrot.Variant.values()[0]));
                 break;
             case POLAR_BEAR:
                 PolarBearTrait polarBearTrait = npc.getOrAddTrait(PolarBearTrait.class);
@@ -249,9 +249,9 @@ public class Mount {
             case ZOMBIE_VILLAGER:
             case VILLAGER:
                 VillagerProfession villagerProfessionTrait = npc.getOrAddTrait(VillagerProfession.class);
-                villagerProfessionTrait.setProfession(villagerProfession);
+                villagerProfessionTrait.setProfession(Objects.requireNonNullElse(villagerProfession, Villager.Profession.values()[0]));
                 VillagerTrait villagerTrait = npc.getOrAddTrait(VillagerTrait.class);
-                villagerTrait.setType(villagerType);
+                villagerTrait.setType(Objects.requireNonNullElse(villagerType, Villager.Type.values()[0]));
                 break;
             case WOLF:
                 assert entity instanceof Wolf;
