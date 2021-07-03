@@ -89,6 +89,8 @@ public class MountManager {
             if (mount.getPermission() == null || mount.getPermission().equalsIgnoreCase("")) {
                 mount.setPermission(defaultPermission);
             }
+            if (mount.getName() == null || mount.getName().equalsIgnoreCase("")) mount.setName(id);
+            if (mount.getLore() == null) mount.setLore(new String[0]);
             loadedMounts.put(id, mount);
         }
         catch (FileNotFoundException e) {
