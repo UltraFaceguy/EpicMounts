@@ -205,7 +205,9 @@ public class MountManager {
     }
 
     public void showGUI(Player player) {
-        new MountSelectorMenu(getAvailableMounts(player)).open(player);
+        List<Mount> mounts = getAvailableMounts(player);
+        if (mounts.isEmpty()) player.sendMessage(TextUtils.color(noMountsMessage));
+        else new MountSelectorMenu(mounts).open(player);
     }
 
     public void equipMount(Player player, Mount mount) {

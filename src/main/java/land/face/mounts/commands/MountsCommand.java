@@ -18,11 +18,6 @@ public class MountsCommand extends BaseCommand {
 
     @Default
     public void onDefault(Player player) {
-        /* TODO
-        if (manager.getAvailableMounts(player).isEmpty()) {
-            player.sendMessage(TextUtils.color(manager.getPrefix() + manager.getNoMountsMessage()));
-        }
-         */
         if (manager.hasCooldown(player)) {
             player.sendMessage(TextUtils.color(manager.getPrefix() + manager.getCooldownMessage()));
         }
