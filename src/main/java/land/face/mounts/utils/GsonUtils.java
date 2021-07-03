@@ -6,7 +6,8 @@ import com.google.gson.GsonBuilder;
 public class GsonUtils {
 
     private static final GsonBuilder gsonBuilder = new GsonBuilder()
-            .setPrettyPrinting();
+            .setPrettyPrinting()
+            .serializeNulls();
 
     public static Gson getGson() {
         return gsonBuilder.create();
