@@ -5,6 +5,7 @@ import com.tealcube.minecraft.bukkit.shade.acf.BaseCommand;
 import com.tealcube.minecraft.bukkit.shade.acf.annotation.*;
 import land.face.mounts.data.Mount;
 import land.face.mounts.managers.MountManager;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.entity.Player;
 
 @CommandAlias("mount|mounts")
@@ -49,5 +50,13 @@ public class MountsCommand extends BaseCommand {
             return;
         }
         m.spawnMount(player);
+    }
+
+    @Subcommand("test")
+    public void onTest(Player player) {
+        NPC npc = manager.getAsNPC(player.getVehicle());
+        npc.getNavigator().getDefaultParameters().modifiedSpeed(10F);
+        player.sendMessage(npc.getNavigator().getDefaultParameters().speed() + "");
+        player.sendMessage(npc.getNavigator().getLocalParameters().speed() + "");
     }
 }

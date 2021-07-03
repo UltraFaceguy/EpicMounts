@@ -131,9 +131,7 @@ public class Mount {
         //Generic Attributes
         npc.setFlyable(flyable);
         npc.getOrAddTrait(Gravity.class).setEnabled(hasGravity);
-        if (speedModifier > 0) {
-            npc.getNavigator().getDefaultParameters().speedModifier(speedModifier);
-        }
+        npc.getNavigator().getDefaultParameters().speedModifier(Math.max(1, speedModifier));
         if (baseHP > 0 && entity instanceof Attributable && entity instanceof Damageable) {
             Objects.requireNonNull(((Attributable) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(baseHP);
             ((Damageable) entity).setHealth(baseHP);
