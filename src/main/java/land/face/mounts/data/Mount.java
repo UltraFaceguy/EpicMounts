@@ -35,6 +35,7 @@ public class Mount {
     private double jumpStrength;
     private int size; //Phantom, Slime, MagmaCube
     private DyeColor color; //Sheep, Shulker
+    private boolean hasSaddle; //Horse, Strider
 
     //ArmorStand
     private boolean hasArms;
@@ -59,7 +60,6 @@ public class Mount {
     private boolean isCarryingChest;
     private Horse.Color horseColor;
     private Horse.Style horseStyle;
-    private boolean hasSaddle;
 
     //Llama
     private Llama.Color llamaColor;
@@ -268,6 +268,7 @@ public class Mount {
             case STRIDER:
                 assert entity instanceof Strider;
                 ((Strider) entity).setShivering(shouldShiver);
+                ((Strider) entity).setSaddle(hasSaddle);
                 break;
         }
     }
