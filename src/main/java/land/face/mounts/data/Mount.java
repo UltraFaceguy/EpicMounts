@@ -12,6 +12,8 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
@@ -131,7 +133,7 @@ public class Mount {
         //Generic Attributes
         npc.setFlyable(flyable);
         npc.getOrAddTrait(Gravity.class).setEnabled(hasGravity);
-        npc.getNavigator().getDefaultParameters().speedModifier(Math.max(1, speedModifier));
+        npc.getNavigator().getLocalParameters().speedModifier(speedModifier);
         if (baseHP > 0 && entity instanceof Attributable && entity instanceof Damageable) {
             Objects.requireNonNull(((Attributable) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(baseHP);
             ((Damageable) entity).setHealth(baseHP);
