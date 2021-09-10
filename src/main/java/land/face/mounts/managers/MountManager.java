@@ -87,6 +87,7 @@ public class MountManager {
     private void load(File file) {
         try {
             Mount mount = GsonUtils.getGson().fromJson(new FileReader(file), Mount.class);
+            if (mount == null) return;
             String id = file.getName().replace(".json", "");
             mount.setId(id);
             if (mount.getPermission() == null || mount.getPermission().equalsIgnoreCase("")) {
@@ -96,7 +97,7 @@ public class MountManager {
             if (mount.getLore() == null) mount.setLore(new String[0]);
             loadedMounts.put(id, mount);
         }
-        catch (FileNotFoundException e) {
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
