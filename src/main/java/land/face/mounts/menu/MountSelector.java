@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class MountSelector extends MenuItem {
 
@@ -25,8 +26,10 @@ public class MountSelector extends MenuItem {
     @Override
     public ItemStack getFinalIcon(Player player) {
         ItemStack stack = new ItemStack(Material.SADDLE);
-        ItemStackExtensionsKt.setDisplayName(stack, StringExtensionsKt.chatColorize(mount.getName()));
-        ItemStackExtensionsKt.setLore(stack, ListExtensionsKt.chatColorize(Arrays.asList(mount.getLore())));
+        String displayName = mount.getName();
+        List<String> lore = Arrays.asList(mount.getLore());
+        ItemStackExtensionsKt.setDisplayName(stack, StringExtensionsKt.chatColorize(displayName));
+        ItemStackExtensionsKt.setLore(stack, ListExtensionsKt.chatColorize(lore));
         return stack;
     }
 
