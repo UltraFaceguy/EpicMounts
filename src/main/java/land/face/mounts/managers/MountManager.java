@@ -1,10 +1,11 @@
 package land.face.mounts.managers;
 
 import com.tealcube.minecraft.bukkit.TextUtils;
+import com.tealcube.minecraft.bukkit.shade.apache.commons.lang.ClassUtils;
 import land.face.mounts.EpicMountsPlugin;
 import land.face.mounts.data.Mount;
+import land.face.mounts.gson.GsonUtils;
 import land.face.mounts.menu.MountSelectorMenu;
-import land.face.mounts.utils.GsonUtils;
 import lombok.Data;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.DespawnReason;
@@ -15,12 +16,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -103,6 +106,9 @@ public class MountManager {
             Bukkit.getLogger().warning("No mount data to save!");
             return;
         }
+
+        loadedMounts.values().forEach(this::sanitizeGenericData);
+
         for (String mountID : loadedMounts.keySet()) {
             try {
                 FileWriter writer = new FileWriter(String.format("%s%s%s.json", path, File.separator, mountID));
@@ -112,6 +118,12 @@ public class MountManager {
                 exception.printStackTrace();
             }
         }
+    }
+    private void sanitizeGenericData(Mount mount) {
+        List<?> entityInterfaces = ClassUtils.getAllInterfaces(EntityType.valueOf(mount.getType()).getEntityClass());
+        if (entityInterfaces == null) return;
+        if (!entityInterfaces.contains(Ageable.class)) mount.setBaby(null);
+        if (!entityInterfaces.contains(AbstractHorse.class)) mount.setJumpStrength(null);
     }
 
     public boolean isLoaded(String mountID) {

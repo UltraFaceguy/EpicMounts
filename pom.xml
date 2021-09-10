@@ -76,6 +76,11 @@
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.danilopianini</groupId>
+      <artifactId>gson-extras</artifactId>
+      <version>0.2.2</version>
+    </dependency>
   </dependencies>
 
   <build>

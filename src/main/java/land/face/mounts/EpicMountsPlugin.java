@@ -1,12 +1,16 @@
 package land.face.mounts;
 
+import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import com.tealcube.minecraft.bukkit.shade.acf.BukkitCommandManager;
 import io.pixeloutlaw.minecraft.spigot.config.MasterConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedSmartYamlConfiguration;
 import land.face.mounts.commands.MountsCommand;
+import land.face.mounts.data.Mount;
+import land.face.mounts.gson.GsonUtils;
 import land.face.mounts.listeners.*;
 import land.face.mounts.managers.MountManager;
+import land.face.mounts.util.Loader;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -41,6 +45,7 @@ public class EpicMountsPlugin extends JavaPlugin {
     }
     settings = MasterConfiguration.loadFromFiles(configYAML);
 
+    registerSubTypes();
     mountManager = new MountManager(this);
     mountManager.loadMounts();
 
@@ -88,5 +93,19 @@ public class EpicMountsPlugin extends JavaPlugin {
 
   public MasterConfiguration getSettings() {
     return settings;
+  }
+
+  private void registerSubTypes() {
+    RuntimeTypeAdapterFactory<Mount> adapter = RuntimeTypeAdapterFactory.of(Mount.class, "type");
+
+    for (final Class<? extends Mount> clazz : new Loader(this.getClassLoader()).find(Mount.class)) {
+      try {
+        adapter.registerSubtype(clazz, clazz.getSimpleName().toUpperCase());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+    GsonUtils.registerTypeAdapter(adapter);
   }
 }
