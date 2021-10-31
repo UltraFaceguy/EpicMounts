@@ -1,5 +1,6 @@
 package land.face.mounts.menu;
 
+import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import io.pixeloutlaw.minecraft.spigot.garbage.ListExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.garbage.StringExtensionsKt;
 import io.pixeloutlaw.minecraft.spigot.hilt.ItemStackExtensionsKt;
@@ -29,7 +30,7 @@ public class MountSelector extends MenuItem {
         String displayName = mount.getName();
         List<String> lore = Arrays.asList(mount.getLore());
         ItemStackExtensionsKt.setDisplayName(stack, StringExtensionsKt.chatColorize(displayName));
-        ItemStackExtensionsKt.setLore(stack, ListExtensionsKt.chatColorize(lore));
+        TextUtils.setLore(stack, ListExtensionsKt.chatColorize(lore));
         return stack;
     }
 

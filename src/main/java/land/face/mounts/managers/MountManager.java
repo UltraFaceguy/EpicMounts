@@ -1,6 +1,6 @@
 package land.face.mounts.managers;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
+import com.tealcube.minecraft.bukkit.facecore.utilities.TextUtils;
 import com.tealcube.minecraft.bukkit.shade.apache.commons.lang.ClassUtils;
 import land.face.mounts.EpicMountsPlugin;
 import land.face.mounts.data.Mount;
