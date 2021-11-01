@@ -39,8 +39,10 @@ public class Mount {
     private Double jumpStrength;
 
     public void spawnMount(Player player) {
-        EntityType entityType = EntityType.valueOf(type);
-        if (entityType == null) {
+        EntityType entityType;
+        try {
+            entityType = EntityType.valueOf(type);
+        } catch (Exception e) {
             System.out.println("Failed to spawn mount " + id + " due to null entity type");
             return;
         }
@@ -66,7 +68,7 @@ public class Mount {
             ((Damageable) entity).setHealth(baseHP);
         }
         if (entity instanceof Ageable) {
-            if (baby) ((Ageable) entity).setBaby();
+            if (baby != null && baby) ((Ageable) entity).setBaby();
             else ((Ageable) entity).setAdult();
         }
         if (entity instanceof AbstractHorse) {
