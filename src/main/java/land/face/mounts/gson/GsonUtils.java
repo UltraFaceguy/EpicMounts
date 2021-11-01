@@ -1,9 +1,8 @@
 package land.face.mounts.gson;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
-
+import com.tealcube.minecraft.bukkit.shade.google.gson.Gson;
+import com.tealcube.minecraft.bukkit.shade.google.gson.GsonBuilder;
+import com.tealcube.minecraft.bukkit.shade.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import java.lang.reflect.Type;
 
 public class GsonUtils {

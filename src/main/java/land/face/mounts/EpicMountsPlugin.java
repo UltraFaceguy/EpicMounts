@@ -1,7 +1,7 @@
 package land.face.mounts;
 
-import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import com.tealcube.minecraft.bukkit.shade.acf.BukkitCommandManager;
+import com.tealcube.minecraft.bukkit.shade.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import io.pixeloutlaw.minecraft.spigot.config.MasterConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedConfiguration;
 import io.pixeloutlaw.minecraft.spigot.config.VersionedSmartYamlConfiguration;
