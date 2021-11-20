@@ -31,12 +31,12 @@ public class Mount {
 
     private boolean flyable;
     private boolean hasGravity;
-    private Double baseSpeed;
-    private Double speedModifier;
-    private Double baseHP;
+    private Double baseSpeed = -1D;
+    private Double speedModifier = -1D;
+    private Double baseHP = -1D;
 
-    private Boolean baby;
-    private Double jumpStrength;
+    private Boolean baby = false;
+    private Double jumpStrength = -1D;
 
     public void spawnMount(Player player) {
         EntityType entityType;
