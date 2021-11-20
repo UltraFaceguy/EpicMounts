@@ -17,9 +17,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class EpicMountsPlugin extends JavaPlugin {
 
@@ -30,6 +28,8 @@ public class EpicMountsPlugin extends JavaPlugin {
 
   private MasterConfiguration settings;
   private VersionedSmartYamlConfiguration configYAML;
+
+  private Set<Class<? extends Mount>> mountClassCache = new HashSet<>();
 
   @Override
   public void onEnable() {
@@ -45,7 +45,9 @@ public class EpicMountsPlugin extends JavaPlugin {
     }
     settings = MasterConfiguration.loadFromFiles(configYAML);
 
+    cacheMountClasses();
     registerSubTypes();
+
     mountManager = new MountManager(this);
     mountManager.loadMounts();
 
@@ -95,17 +97,25 @@ public class EpicMountsPlugin extends JavaPlugin {
     return settings;
   }
 
-  private void registerSubTypes() {
-    RuntimeTypeAdapterFactory<Mount> adapter = RuntimeTypeAdapterFactory.of(Mount.class, "type");
+  public Set<Class<? extends Mount>> getMountClassCache() {
+    return mountClassCache;
+  }
 
+  private void cacheMountClasses() {
+    Set<Class<? extends Mount>> set = new HashSet<>();
     for (final Class<? extends Mount> clazz : new Loader(this.getClassLoader()).find(Mount.class)) {
       try {
-        adapter.registerSubtype(clazz, clazz.getSimpleName().toUpperCase());
+        set.add(clazz);
       } catch (Exception e) {
         e.printStackTrace();
       }
     }
+    this.mountClassCache = set;
+  }
 
+  private void registerSubTypes() {
+    RuntimeTypeAdapterFactory<Mount> adapter = RuntimeTypeAdapterFactory.of(Mount.class, "type");
+    mountClassCache.forEach(clazz -> adapter.registerSubtype(clazz, clazz.getSimpleName().toUpperCase()));
     GsonUtils.registerTypeAdapter(adapter);
   }
 }
