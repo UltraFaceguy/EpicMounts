@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 @Data
@@ -66,6 +67,32 @@ public class MountManager {
         cooldownMessage = plugin.getSettings().getString("config.language.cooldown", "&cCooling Down!");
         despawnMessage = plugin.getSettings().getString("config.language.despawn", "&oYour mount wandered away...");
         NPCRegistry = CitizensAPI.createAnonymousNPCRegistry(new MemoryNPCDataStore());
+
+        if (!Files.exists(templatePath)) createTemplates();
+    }
+
+    public void createTemplates() {
+        try {
+            Files.createDirectory(templatePath);
+        } catch (IOException e) {
+            Bukkit.getLogger().log(Level.WARNING, "Unable to create templates folder!");
+        }
+
+        for (Class<? extends Mount> clazz : plugin.getMountClassCache()) {
+            try {
+                Mount obj = clazz.getDeclaredConstructor().newInstance();
+                String name = clazz.getSimpleName();
+                obj.setId(name);
+                obj.setLore(new String[]{"I SCREAM!", "YOU SCREAM!!", "WE ALL SCREAM FOR LORE!!!"});
+                sanitizeGenericData(obj);
+
+                FileWriter writer = new FileWriter(String.format("%s%s%s.json", templatePath, File.separator, name));
+                GsonUtils.getGson().toJson(obj, writer);
+                writer.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void loadMounts() {
