@@ -69,7 +69,7 @@ public class EpicMountsPlugin extends JavaPlugin {
         player.closeInventory();
       }
     }
-    mountManager.saveMounts();
+    //mountManager.saveMounts(); Only save mount files if explicitly called via commands
     mountManager.removeAllMounts();
     Bukkit.getServer().getLogger().info("EpicMounts has been disabled");
   }
