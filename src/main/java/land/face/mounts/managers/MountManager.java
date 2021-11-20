@@ -92,11 +92,7 @@ public class MountManager {
             if (mount == null) return;
             String id = file.getName().replace(".json", "");
             mount.setId(id);
-            if (mount.getPermission() == null || mount.getPermission().equalsIgnoreCase("")) {
-                mount.setPermission(defaultPermission);
-            }
-            if (mount.getName() == null || mount.getName().equalsIgnoreCase("")) mount.setName(id);
-            if (mount.getLore() == null) mount.setLore(new String[0]);
+            sanitizeGenericData(mount);
             loadedMounts.put(id, mount);
         }
         catch (Exception e) {
@@ -123,6 +119,12 @@ public class MountManager {
         }
     }
     private void sanitizeGenericData(Mount mount) {
+        if (mount.getPermission() == null || mount.getPermission().equalsIgnoreCase("")) {
+            mount.setPermission(defaultPermission);
+        }
+        if (mount.getName() == null || mount.getName().equalsIgnoreCase("")) mount.setName(mount.getId());
+        if (mount.getLore() == null) mount.setLore(new String[0]);
+
         List<?> entityInterfaces = ClassUtils.getAllInterfaces(EntityType.valueOf(mount.getType()).getEntityClass());
         if (entityInterfaces == null) return;
         if (!entityInterfaces.contains(Ageable.class)) mount.setBaby(null);
