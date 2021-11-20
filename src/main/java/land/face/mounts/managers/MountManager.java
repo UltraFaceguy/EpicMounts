@@ -35,7 +35,8 @@ public class MountManager {
 
     private final EpicMountsPlugin plugin;
     private final NPCRegistry NPCRegistry;
-    private final String path;
+    private final Path templatePath;
+    private final Path path;
 
     private final Map<String, Mount> loadedMounts = new HashMap<>();
     private       ArrayList<UUID> mountCooldowns = new ArrayList<>();
@@ -53,7 +54,8 @@ public class MountManager {
 
     public MountManager(EpicMountsPlugin plugin) {
         this.plugin = plugin;
-        this.path = plugin.getDataFolder() + File.separator + "MountData";
+        this.path = Paths.get(plugin.getDataFolder() + File.separator + "MountData");
+        this.templatePath = Paths.get(plugin.getDataFolder() + File.separator + "Templates");
         defaultPermission = plugin.getSettings().getString("config.permission.default_mount", "EpicMount.DefaultMount");
         cooldownDelay = plugin.getSettings().getLong("config.Cooldown", 0);
         windowName = plugin.getSettings().getString("config.WindowName", "Epic Gamer Mounts!");
@@ -69,14 +71,14 @@ public class MountManager {
     public void loadMounts() {
         loadedMounts.clear();
         try {
-            Files.walk(Paths.get(path))
+            Files.walk(path)
                     .filter(Files::isRegularFile)
                     .filter(p -> p.toString().endsWith(".json"))
                     .map(Path::toFile)
                     .forEach(this::load);
         } catch (Exception e) {
             try {
-                Files.createDirectory(Paths.get(path));
+                Files.createDirectory(path);
             } catch (Exception e2) {
                 e.printStackTrace();
             }
